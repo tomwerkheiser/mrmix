@@ -3,17 +3,15 @@
 import Sass from './tasks/sass';
 
 class Runner {
-    constructor() {
-        console.log('Runner');
-    }
-
-    sass() {
-        new Sass();
+    sass(src, dest, options) {
+        new Sass(src, dest, options);
 
         return this;
     }
 }
 
 export function MrMix (tasks) {
-    tasks(new Runner());
+    let runner = new Runner();
+
+    tasks(runner);
 }
