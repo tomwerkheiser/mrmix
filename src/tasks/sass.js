@@ -17,6 +17,7 @@ const input = cli.input;
 export default class Sass {
     constructor(src, dest, options) {
         this.graph;
+        this.gaze;
         this.sassOptions = {
             outputStyle: 'expand',
             linefeed: 'lf',
@@ -35,6 +36,7 @@ export default class Sass {
 
     boot() {
         let graphOptions = { extensions: ['scss', 'css'] };
+
         if ( typeof this.sassOptions.loadPaths != 'undefined' ) {
             graphOptions.loadPaths = [this.sassOptions.loadPaths];
         }
@@ -47,7 +49,11 @@ export default class Sass {
         }
 
         if ( this.watch ) {
-            console.log('watch');
+            console.log(colors.bgGreen.black('Getting Files to Watch...'));
+            console.log(' ');
+            console.log(' ');
+
+            this.watcher();
         } else {
             this.renderDir();
         }
@@ -61,6 +67,27 @@ export default class Sass {
         }
 
         return watch;
+    }
+
+    watcher() {
+        let watch = [];
+
+        this.gaze = new Gaze();
+
+        // Add all files to watch list
+        for (let i in this.graph.index) {
+            watch.push(i);
+        }
+
+        this.gaze.add(watch);
+
+        this.gaze.on('changed', function(file) {
+            this.compileSass(file);
+        }.bind(this));
+
+        this.gaze.on('ready', function () {
+            console.log(colors.bgGreen.black('Ready'));
+        });
     }
 
     renderDir() {
@@ -132,91 +159,4 @@ export default class Sass {
         console.log('   Saved To: ', path.resolve(outFile));
     	console.log(' ');
     }
-}
-
-
-
-function watcher() {
-    var watch = [];
-
-    // Add all files to watch list
-    for (var i in graph.index) {
-        watch.push(i);
-    }
-
-    gaze.add(watch);
-
-    gaze.on('changed', function(file) {
-        compileSass(file);
-    });
-}
-
-function renderDir() {
-    for (var file in graph.index) {
-        compileSass(file);
-    }
-}
-
-function compileSass(file) {
-    var files = [file];
-    var filePath;
-    var uploadFiles = [];
-    graph.visitAncestors(file, function(parent) {
-        files.push(parent);
-    });
-
-    console.log(colors.bgGreen.black('Compiling Sass Files...'));
-    var shouldUpload = false;
-    files.forEach(function(file) {
-        if (path.basename(file)[0] !== '_') {
-            // upload path
-            var name = path.extname(sassOptions.output) == '' ? sassOptions.output : path.basename(sassOptions.output, '.css');
-
-            if ( fs.statSync(file).isDirectory()) {
-                filePath = path.normalize(sassOptions.output), path.basename(file, '.scss') + '.css';
-            } else {
-                filePath = path.join(path.dirname(sassOptions.output), name) + '.css';
-            }
-
-            uploadFiles.push(filePath);
-            try {
-                renderSassFile(file);
-                shouldUpload = true
-            } catch (Error) {
-                console.log(' ');
-                console.log(colors.bgRed.white('ERROR'));
-                console.log(Error.message);
-                console.log(' ');
-                shouldUpload = false;
-            }
-        }
-    });
-
-    if ( shouldUpload && wantsToUpload ) {
-        upload(uploadFiles);
-    }
-}
-
-function renderSassFile(file) {
-    var ext = path.extname(file);
-    var name = path.basename(file, ext);
-    var outFile = path.extname(sassOptions.output) == '' ? `${sassOptions.output}/${name}.css` : sassOptions.output;
-
-    sassOptions.file = file;
-    sassOptions.outFile = path.resolve(outFile)
-
-    var result = sass.renderSync(sassOptions);
-
-    if (! result.error) {
-        fs.writeFile(outFile, result.css, function (err) {
-            if (err) {
-                console.log('ERROR: ', err);
-            }
-        });
-    }
-
-    console.log(' - ', file);
-    console.log('   Time: ', colors.bold(result.stats.duration), 'ms');
-    console.log('   Saved To: ', path.resolve(outFile));
-	console.log(' ');
 }
