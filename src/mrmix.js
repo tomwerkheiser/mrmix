@@ -1,10 +1,17 @@
 'use strict';
 
 import Sass from './tasks/sass';
+import Copy from './tasks/copy';
 
 class Runner {
     sass(src, dest, options) {
         new Sass(src, dest, options);
+
+        return this;
+    }
+
+    copy(src, dest) {
+        new Copy(src, dest);
 
         return this;
     }

@@ -87,6 +87,7 @@ export default class Sass {
 
         this.gaze.on('ready', function () {
             console.log(colors.bgGreen.black('Ready'));
+            console.log(' ');
         });
     }
 
