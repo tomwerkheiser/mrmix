@@ -2,6 +2,7 @@
 
 import Sass from './tasks/sass';
 import Copy from './tasks/copy';
+import Webpack from './tasks/webpack';
 
 class Runner {
     sass(src, dest, options) {
@@ -12,6 +13,12 @@ class Runner {
 
     copy(src, dest) {
         new Copy(src, dest);
+
+        return this;
+    }
+
+    webpack(src, dest, options) {
+        new Webpack(src, dest, options);
 
         return this;
     }
