@@ -3,6 +3,7 @@
 import Sass from './tasks/sass';
 import Copy from './tasks/copy';
 import Webpack from './tasks/webpack';
+import  Combine from './tasks/combine';
 
 class Runner {
     sass(src, dest, options) {
@@ -19,6 +20,12 @@ class Runner {
 
     webpack(src, dest, options) {
         new Webpack(src, dest, options);
+
+        return this;
+    }
+
+    combine(src, dest, fileName) {
+        new Combine(src, dest, fileName);
 
         return this;
     }

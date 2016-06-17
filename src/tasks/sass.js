@@ -81,11 +81,11 @@ export default class Sass {
 
         this.gaze.add(watch);
 
-        this.gaze.on('changed', function(file) {
+        this.gaze.on('changed', (file) => {
             this.compileSass(file);
-        }.bind(this));
+        });
 
-        this.gaze.on('ready', function () {
+        this.gaze.on('ready', () => {
             console.log(colors.bgGreen.black('Ready'));
             console.log(' ');
         });
@@ -101,13 +101,13 @@ export default class Sass {
         let files = [file];
         let filePath;
         let uploadFiles = [];
-        this.graph.visitAncestors(file, function(parent) {
+        this.graph.visitAncestors(file, (parent) => {
             files.push(parent);
         });
 
         console.log(colors.bgGreen.black('Compiling Sass Files...'));
         let shouldUpload = false;
-        files.forEach(function(file) {
+        files.forEach((file) => {
             if (path.basename(file)[0] !== '_') {
                 // upload path
                 let name = path.extname(this.sassOptions.output) == '' ? this.sassOptions.output : path.basename(this.sassOptions.output, '.css');
@@ -130,7 +130,7 @@ export default class Sass {
                     shouldUpload = false;
                 }
             }
-        }, this);
+        });
 
         // if ( shouldUpload && wantsToUpload ) {
         //     upload(uploadFiles);
@@ -148,7 +148,7 @@ export default class Sass {
         let result = sass.renderSync(this.sassOptions);
 
         if (! result.error) {
-            fs.writeFile(outFile, result.css, function (err) {
+            fs.writeFile(outFile, result.css, (err) => {
                 if (err) {
                     console.log('ERROR: ', err);
                 }

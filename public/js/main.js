@@ -34,7 +34,7 @@
 /******/ 	__webpack_require__.c = installedModules;
 
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/Users/tomwerkheiser/Documents/Code/mrmix/public/js";
+/******/ 	__webpack_require__.p = "C:\\Users\\tom.werkheiser\\Documents\\GitHub\\MrMix\\public\\js";
 
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
