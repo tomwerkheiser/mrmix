@@ -16,11 +16,11 @@ export default class Combine {
     boot() {
 		this.checkDest();
 
-        if ( fs.statSync(this.dest).isDirectory() ) {
-            this.parseDir();
-        }
-
         if ( !Array.isArray(this.src) ) {
+            if ( fs.statSync(this.src).isDirectory() ) {
+                this.parseDir();
+            }
+
             this.src = [this.src];
         }
 

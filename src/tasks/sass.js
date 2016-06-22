@@ -55,7 +55,11 @@ export default class Sass {
 
             this.watcher();
         } else {
-            this.renderDir();
+            if ( fs.statSync(this.src).isDirectory() ) {
+                this.renderDir();
+            } else {
+                this.compileSass(this.src);
+            }
         }
     }
 

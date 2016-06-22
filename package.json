@@ -10,7 +10,7 @@
   "bin": {
     "mrmix": "bin/mrmix.js"
   },
-  "author": "",
+  "author": "Tom Werkheiser",
   "license": "ISC",
   "dependencies": {
     "babel-cli": "^6.9.0",
