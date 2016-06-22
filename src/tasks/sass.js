@@ -6,13 +6,8 @@ import grapher from 'sass-graph';
 import Gaze from 'gaze';
 import fs from 'fs';
 import colors from 'colors';
-import meow from 'meow';
 import process from 'process';
-
-const cli = meow();
-
-const flags = cli.flags
-const input = cli.input;
+import {isDirectory, shouldWatch} from '../helpers/file';
 
 export default class Sass {
     constructor(src, dest, options) {
@@ -27,7 +22,7 @@ export default class Sass {
         this.src = src;
         this.dest = dest;
 
-        this.watch = this.shouldWatch();
+        this.watch = shouldWatch();
 
         Object.assign(this.sassOptions, options);
 
@@ -41,8 +36,7 @@ export default class Sass {
             graphOptions.loadPaths = [this.sassOptions.loadPaths];
         }
 
-        let stat = fs.statSync(this.src);
-        if ( stat.isDirectory()) {
+        if ( isDirectory(this.src)) {
             this.graph = grapher.parseDir(this.src, graphOptions);
         } else {
             this.graph = grapher.parseFile(this.src, graphOptions);
@@ -55,22 +49,12 @@ export default class Sass {
 
             this.watcher();
         } else {
-            if ( fs.statSync(this.src).isDirectory() ) {
+            if ( isDirectory(this.src)) {
                 this.renderDir();
             } else {
                 this.compileSass(this.src);
             }
         }
-    }
-
-    shouldWatch() {
-        let watch = flags.w || flags.watch || false;
-
-        if ( typeof input[0] != 'undefined' && !watch ) {
-            watch = input[0].toLowerCase() == 'w' || input[0].toLowerCase() == 'watch' || false;
-        }
-
-        return watch;
     }
 
     watcher() {
@@ -116,7 +100,7 @@ export default class Sass {
                 // upload path
                 let name = path.extname(this.sassOptions.output) == '' ? this.sassOptions.output : path.basename(this.sassOptions.output, '.css');
 
-                if ( fs.statSync(file).isDirectory()) {
+                if ( isDirectory(file)) {
                     filePath = path.normalize(this.sassOptions.output), path.basename(file, '.scss') + '.css';
                 } else {
                     filePath = path.join(path.dirname(this.sassOptions.output), name) + '.css';
