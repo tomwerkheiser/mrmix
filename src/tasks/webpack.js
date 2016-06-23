@@ -2,14 +2,9 @@
 
 import path from 'path';
 import fs from 'fs';
-import colors from 'colors';
 import webpack from 'webpack';
-import meow from 'meow';
-
-const cli = meow();
-
-const flags = cli.flags
-const input = cli.input;
+import {isDirectory, shouldWatch} from '../helpers/file';
+import {writeHeader, writeLn, writeSpace} from '../helpers/console';
 
 export default class Webpack {
     constructor(src, dest, options) {
@@ -19,37 +14,26 @@ export default class Webpack {
         this.dest = dest;
         this.options = options;
 
-        this.watch = this.shouldWatch();
+        this.watch = shouldWatch();
 
         this.boot();
     }
 
     boot() {
-        console.log(colors.bgGreen.black('Getting JS Files for Webpack...'));
-        console.log(' ');
+        writeHeader('Getting JS Files for Webpack...');
+        writeSpace();
 
         this.setup();
 
         if ( this.watch ) {
             this.watcher();
         } else {
-            this.compile();            
+            this.compile();
         }
-    }
-
-    shouldWatch() {
-        let watch = flags.w || flags.watch || false;
-
-        if ( typeof input[0] != 'undefined' && !watch ) {
-            watch = input[0].toLowerCase() == 'w' || input[0].toLowerCase() == 'watch' || false;
-        }
-
-        return watch;
     }
 
     setup() {
-        // TODO: merge these options with passed options
-        this.compiler = webpack({
+        let config = {
             entry: path.resolve(this.src),
             output: {
                 filename: "[name].js",
@@ -75,7 +59,11 @@ export default class Webpack {
                 presets: ['es2015'],
                 plugins: ['transform-runtime']
             }
-        });
+        };
+
+        config = Object.assign(config, this.options);
+
+        this.compiler = webpack(config);
     }
 
     compile() {
@@ -83,10 +71,10 @@ export default class Webpack {
             if ( err ) {
                 console.log('ERROR: ', err);
             } else {
-                console.log(colors.bgGreen.black('Compiling Webpack JS Files...'));
-                console.log(' ');
-                console.log(stats.toString({colors: true, modules: false, chunks: false}));
-                console.log(' ');
+                writeHeader('Compiling Webpack JS Files...');
+                writeSpace();
+                writeLn(stats.toString({colors: true, modules: false, chunks: false}));
+                writeSpace();
 
                 var stat = stats.toJson();
                 var assets = stat.assets;
@@ -113,10 +101,10 @@ export default class Webpack {
             if ( err ) {
                 console.log('ERROR: ', err);
             } else {
-                console.log(colors.bgGreen.black('Compiling Webpack JS Files...'));
-                console.log(' ');
-                console.log(stats.toString({colors: true, modules: false, chunks: false}));
-                console.log(' ');
+                writeHeader('Compiling Webpack JS Files...');
+                writeSpace();
+                writeLn(stats.toString({colors: true, modules: false, chunks: false}));
+                writeSpace();
 
                 var stat = stats.toJson();
                 var assets = stat.assets;

@@ -2,8 +2,8 @@
 
 import path from 'path';
 import fs from 'fs';
-import colors from 'colors';
 import {isDirectory, mkDirIfDoesntExist} from '../helpers/file';
+import {writeHeader, writeLn} from '../helpers/console';
 
 export default class Copy {
 	constructor(src, dest) {
@@ -14,7 +14,7 @@ export default class Copy {
 	}
 
 	boot() {
-        console.log(colors.bgGreen.black('Copying Files...'));
+		writeHeader('Copying Files...');
 
         if ( this.dest != null) {
 			mkDirIfDoesntExist(this.dest);
@@ -24,13 +24,13 @@ export default class Copy {
 			if ( Array.isArray(this.src)) {
 				this.copyFiles();
 			} else {
-				this.copyObject();				
+				this.copyObject();
 			}
 		} else {
 			if ( isDirectory(this.dest)) {
 				this.copyDir();
 			} else {
-				this.moveFile(this.src, this.dest);				
+				this.moveFile(this.src, this.dest);
 			}
 		}
 	}
@@ -63,9 +63,9 @@ export default class Copy {
 		reader.pipe(writer);
 
 		reader.on('end', () => {
-			console.log(`-  From: ${src}`);
-			console.log(`     To: ${destFileName}`);
-			console.log('  ');
+			writeLn(`-  From: ${src}`);
+			writeLn(`     To: ${destFileName}`);
+			writeLn('  ');
 		});
 	}
 }

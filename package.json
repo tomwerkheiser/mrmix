@@ -30,7 +30,7 @@
     "sass-loader": "^3.1.2",
     "ssh2": "^0.4.13",
     "style-loader": "^0.13.0",
-    "uglify-js": "^2.6.2",
+    "uglify-js": "^2.6.4",
     "webpack": "^1.12.13"
   }
 }
