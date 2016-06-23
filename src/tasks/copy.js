@@ -3,6 +3,7 @@
 import path from 'path';
 import fs from 'fs';
 import colors from 'colors';
+import {isDirectory, mkDirIfDoesntExist} from '../helpers/file';
 
 export default class Copy {
 	constructor(src, dest) {
@@ -13,18 +14,44 @@ export default class Copy {
 	}
 
 	boot() {
-		this.checkDest();
-
         console.log(colors.bgGreen.black('Copying Files...'));
-		if ( typeof this.src == 'object' ) {
 
+        if ( this.dest != null) {
+			mkDirIfDoesntExist(this.dest);
+        }
+
+		if ( typeof this.src == 'object' ) {
+			if ( Array.isArray(this.src)) {
+				this.copyFiles();
+			} else {
+				this.copyObject();				
+			}
 		} else {
-			this.moveFile(this.src, this.dest);
+			if ( isDirectory(this.dest)) {
+				this.copyDir();
+			} else {
+				this.moveFile(this.src, this.dest);				
+			}
 		}
 	}
 
 	copyObject() {
+		for ( let key in this.src ) {
+			this.moveFile(key, this.src[key]);
+		}
+	}
 
+	copyDir() {
+        fs.readdirSync(this.src)
+            .forEach((file) => {
+            	this.moveFile(`${this.src}/${file}`, this.dest);
+            });
+	}
+
+	copyFiles() {
+		this.src.forEach((file) => {
+	    	this.moveFile(file, this.dest);
+		});
 	}
 
 	moveFile(src, dest) {
@@ -40,13 +67,5 @@ export default class Copy {
 			console.log(`     To: ${destFileName}`);
 			console.log('  ');
 		});
-	}
-
-	checkDest() {
-		try {
-			return fs.statSync(this.dest).isDirectory();
-		} catch (e) {
-			return fs.mkdirSync(this.dest);
-		}
 	}
 }
