@@ -78,17 +78,12 @@ export default class Webpack {
 
                 var stat = stats.toJson();
                 var assets = stat.assets;
-                var uploadFiles = [];
 
                 // assets.forEach(function (file) {
                 //     if ( file.emitted ) {
                 //         uploadFiles.push(path.resolve(path.dirname(this.src)) + '/' + file.name);
                 //     }
                 // });
-
-                // if ( wantsToUpload && uploadFiles.length > 0 ) {
-                //     upload(uploadFiles);
-                // }
             }
         });
     }
@@ -108,20 +103,13 @@ export default class Webpack {
 
                 var stat = stats.toJson();
                 var assets = stat.assets;
-                var uploadFiles = [];
 
                 // assets.forEach(function (file) {
                 //     if ( file.emitted ) {
                 //         uploadFiles.push(path.resolve(path.dirname(src)) + '/' + file.name);
                 //     }
                 // });
-
-                // if ( wantsToUpload && uploadFiles.length > 0 ) {
-                //     upload(uploadFiles);
-                // }
             }
         });
     }
-
-
 }

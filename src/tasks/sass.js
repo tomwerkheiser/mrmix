@@ -94,13 +94,13 @@ export default class Sass {
         });
 
         console.log(colors.bgGreen.black('Compiling Sass Files...'));
-        let shouldUpload = false;
         files.forEach((file) => {
             if (path.basename(file)[0] !== '_') {
-                // upload path
+                // name of file to save to.
                 let name = path.extname(this.sassOptions.output) == '' ? this.sassOptions.output : path.basename(this.sassOptions.output, '.css');
 
                 if ( isDirectory(file)) {
+                    // TODO: this doesn't work. The , after normalize breaks this
                     filePath = path.normalize(this.sassOptions.output), path.basename(file, '.scss') + '.css';
                 } else {
                     filePath = path.join(path.dirname(this.sassOptions.output), name) + '.css';
@@ -109,20 +109,14 @@ export default class Sass {
                 uploadFiles.push(filePath);
                 try {
                     this.renderSassFile(file);
-                    shouldUpload = true
                 } catch (Error) {
                     console.log(' ');
                     console.log(colors.bgRed.white('ERROR'));
                     console.log(Error.message);
                     console.log(' ');
-                    shouldUpload = false;
                 }
             }
         });
-
-        // if ( shouldUpload && wantsToUpload ) {
-        //     upload(uploadFiles);
-        // }
     }
 
     renderSassFile(file) {
@@ -146,6 +140,6 @@ export default class Sass {
         console.log(' - ', file);
         console.log('   Time: ', colors.bold(result.stats.duration), 'ms');
         console.log('   Saved To: ', path.resolve(outFile));
-    	console.log(' ');
+        console.log(' ');
     }
 }

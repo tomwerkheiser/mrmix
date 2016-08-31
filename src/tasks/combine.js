@@ -14,7 +14,7 @@ export default class Combine {
     }
 
     boot() {
-		this.checkDest();
+        this.checkDest();
 
         if ( !Array.isArray(this.src) ) {
             if ( fs.statSync(this.src).isDirectory() ) {
@@ -56,12 +56,12 @@ export default class Combine {
     }
 
     checkDest() {
-		try {
-			return fs.statSync(this.dest).isDirectory();
-		} catch (e) {
-			return fs.mkdirSync(this.dest);
-		}
-	}
+        try {
+            return fs.statSync(this.dest).isDirectory();
+        } catch (e) {
+            return fs.mkdirSync(this.dest);
+        }
+    }
 
     checkFile() {
         let file;
