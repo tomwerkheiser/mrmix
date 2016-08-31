@@ -16,10 +16,6 @@ export default class Copy {
     boot() {
         writeHeader('Copying Files...');
 
-        if ( this.dest != null && isDirectory(this.dest) ) {
-            mkDirIfDoesntExist(this.dest);
-        }
-
         if ( typeof this.src == 'object' ) {
             if ( Array.isArray(this.src)) {
                 this.copyFiles();
