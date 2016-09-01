@@ -6,7 +6,7 @@ import meow from 'meow';
 
 const cli = meow();
 
-const flags = cli.flags
+const flags = cli.flags;
 const input = cli.input;
 
 export function isDirectory(dir) {
@@ -36,4 +36,8 @@ export function shouldWatch() {
     }
 
     return watch;
+}
+
+export function isProduction() {
+    return flags.p || flags.production || false
 }

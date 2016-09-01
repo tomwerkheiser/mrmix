@@ -7,14 +7,14 @@ import Gaze from 'gaze';
 import fs from 'fs';
 import colors from 'colors';
 import process from 'process';
-import {isDirectory, shouldWatch} from '../helpers/file';
+import {isDirectory, shouldWatch, isProduction} from '../helpers/file';
 
 export default class Sass {
     constructor(src, dest, options) {
         this.graph;
         this.gaze;
         this.sassOptions = {
-            outputStyle: 'expand',
+            outputStyle: isProduction() ? 'compressed' : 'expand',
             linefeed: 'lf',
             output: dest
         }

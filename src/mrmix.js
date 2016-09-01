@@ -29,6 +29,18 @@ class Runner {
 
         return this;
     }
+
+    styles(src, dest, fileName) {
+        new Combine(src, dest, fileName || 'app.js', 'js');
+
+        return this;
+    }
+
+    scripts(src, dest, fileName) {
+        new Combine(src, dest, fileName || 'app.css', 'css');
+
+        return this;
+    }
 }
 
 export function MrMix (tasks) {
