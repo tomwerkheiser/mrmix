@@ -1,14 +1,13 @@
 'use strict';
 
-import path from 'path';
 import fs from 'fs';
-import colors from 'colors';
 
 export default class Combine {
-    constructor(src, dest, fileName) {
+    constructor(src, dest, fileName, type) {
         this.src = src;
         this.dest = dest;
-        this.fileName = fileName || 'app.js';
+        this.fileName = fileName;
+        this.type = type;
 
         this.boot();
     }
