@@ -43,7 +43,7 @@ class Runner {
     }
 }
 
-export function MrMix (tasks) {
+export default function MrMix (tasks) {
     let runner = new Runner();
 
     tasks(runner);
