@@ -1,13 +1,19 @@
-'use strict';
-
+// External Dependencies
 import path from 'path';
 import sass from 'node-sass';
 import grapher from 'sass-graph';
 import Gaze from 'gaze';
 import fs from 'fs';
 import colors from 'colors';
-import process from 'process';
-import {isDirectory, shouldWatch, isProduction} from '../helpers/file';
+
+// Internal Dependencies
+import {
+    isDirectory,
+    shouldWatch,
+    isProduction,
+    parseDirectory,
+    mkDirIfDoesntExist
+} from '../helpers/file';
 
 export default class Sass {
     constructor(src, dest, options) {
@@ -69,9 +75,7 @@ export default class Sass {
 
         this.gaze.add(watch);
 
-        this.gaze.on('changed', (file) => {
-            this.compileSass(file);
-        });
+        this.gaze.on('changed', file => this.compileSass(file));
 
         this.gaze.on('ready', () => {
             console.log(colors.bgGreen.black('Ready'));
@@ -88,27 +92,31 @@ export default class Sass {
     compileSass(file) {
         let files = [file];
         let filePath;
-        let uploadFiles = [];
-        this.graph.visitAncestors(file, (parent) => {
-            files.push(parent);
-        });
+        let fullPath = path.resolve(this.src);
+
+        // Get any ancestors that that the file has
+        this.graph.visitAncestors(file, parent => files.push(parent));
 
         console.log(colors.bgGreen.black('Compiling Sass Files...'));
         files.forEach((file) => {
             if (path.basename(file)[0] !== '_') {
                 // name of file to save to.
-                let name = path.extname(this.sassOptions.output) == '' ? this.sassOptions.output : path.basename(this.sassOptions.output, '.css');
+                let outpath = path.extname(this.sassOptions.output) == ''
+                    ? this.sassOptions.output
+                    : path.dirname(this.sassOptions.output, path.extname(this.sassOptions.output));
+                let ext = path.extname(file);
+                let name = path.basename(file, ext);
 
-                if ( isDirectory(file)) {
-                    // TODO: this doesn't work. The , after normalize breaks this
-                    filePath = path.normalize(this.sassOptions.output), path.basename(file, '.scss') + '.css';
+                let dirName = path.dirname(file);
+                if ( fullPath != dirName ) {
+                    let sassDirName = dirName.replace(fullPath, '');
+                    filePath = path.join(this.sassOptions.output, sassDirName, name) + '.css';
                 } else {
-                    filePath = path.join(path.dirname(this.sassOptions.output), name) + '.css';
+                    filePath = path.join(outpath, name) + '.css';
                 }
 
-                uploadFiles.push(filePath);
                 try {
-                    this.renderSassFile(file);
+                    this.renderSassFile(file, filePath);
                 } catch (Error) {
                     console.log(' ');
                     console.log(colors.bgRed.white('ERROR'));
@@ -119,20 +127,21 @@ export default class Sass {
         });
     }
 
-    renderSassFile(file) {
-        let ext = path.extname(file);
-        let name = path.basename(file, ext);
-        let outFile = path.extname(this.sassOptions.output) == '' ? `${this.sassOptions.output}/${name}.css` : this.sassOptions.output;
-
+    renderSassFile(file, outFile) {
         this.sassOptions.file = file;
-        this.sassOptions.outFile = path.resolve(outFile)
-
+        this.sassOptions.outFile = outFile;
         let result = sass.renderSync(this.sassOptions);
 
         if (! result.error) {
+            console.log('OUTFILE: ', outFile);
+            mkDirIfDoesntExist(parseDirectory(outFile));
+
             fs.writeFile(outFile, result.css, (err) => {
                 if (err) {
-                    console.log('ERROR: ', err);
+                    console.log(' ');
+                    console.log(colors.bgRed.white('ERROR'));
+                    console.log(err.message);
+                    console.log(' ');
                 }
             });
         }
