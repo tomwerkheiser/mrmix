@@ -5,7 +5,7 @@ import Copy from './tasks/copy';
 import Webpack from './tasks/webpack';
 import  Combine from './tasks/combine';
 
-class Runner {
+export default class MrMix {
     sass(src, dest, options) {
         new Sass(src, dest, options);
 
@@ -43,8 +43,8 @@ class Runner {
     }
 }
 
-export default function MrMix (tasks) {
-    let runner = new Runner();
-
-    tasks(runner);
-}
+// export default function MrMix (tasks) {
+//     let runner = new Runner();
+//
+//     tasks(runner);
+// }
