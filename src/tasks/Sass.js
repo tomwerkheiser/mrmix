@@ -20,7 +20,7 @@ export default class Sass {
     constructor(src, dest, options) {
         this.graph;
         this.gaze;
-        this.sassOptions = {
+        this.defaultOptions = {
             outputStyle: isProduction() ? 'compressed' : 'expand',
             linefeed: 'lf',
             output: dest
@@ -33,7 +33,7 @@ export default class Sass {
 
         this.watch = shouldWatch();
 
-        Object.assign(this.sassOptions, options);
+        this.sassOptions = Object.assign({}, this.defaultOptions, options);
 
         this.boot();
     }

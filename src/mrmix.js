@@ -1,9 +1,10 @@
 'use strict';
 
-import Sass from './tasks/sass';
-import Copy from './tasks/copy';
-import Webpack from './tasks/webpack';
-import  Combine from './tasks/combine';
+import Sass from './tasks/Sass';
+import Copy from './tasks/Copy';
+import Webpack from './tasks/Webpack';
+import  Combine from './tasks/Combine';
+import Babel from './tasks/Babel';
 
 export default class MrMix {
     sass(src, dest, options) {
@@ -38,6 +39,12 @@ export default class MrMix {
 
     scripts(src, dest, fileName) {
         new Combine(src, dest, fileName || 'app.css', 'css');
+
+        return this;
+    }
+
+    babel(src, dest, options) {
+        new Babel(src, dest, options);
 
         return this;
     }
