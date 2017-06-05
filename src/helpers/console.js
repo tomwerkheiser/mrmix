@@ -1,5 +1,3 @@
-'use strict';
-
 import colors from 'colors';
 
 export function writeHeader(message) {

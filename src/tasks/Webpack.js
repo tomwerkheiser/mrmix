@@ -1,5 +1,3 @@
-'use strict';
-
 import path from 'path';
 import fs from 'fs';
 import webpack from 'webpack';
@@ -8,7 +6,7 @@ import {writeHeader, writeLn, writeSpace} from '../helpers/console';
 
 export default class Webpack {
     constructor(src, dest, options) {
-        this.compiler;
+        this.compiler = false;
 
         this.src = src;
         this.dest = dest;
@@ -41,23 +39,25 @@ export default class Webpack {
                 publicPath: path.resolve(this.dest)
             },
             resolve: {
-                root: [
-                    path.resolve(path.dirname(this.src))
+                modules: [
+                    path.resolve(path.dirname(this.src)),
+                    "node_modules"
                 ]
             },
             module: {
-                loaders: [
+                rules: [
                     {
                         test: /\.js$/,
                         exclude: /node_modules/,
                         loader: 'babel-loader',
-                        include: path.resolve(path.dirname(this.src))
+                        include: path.resolve(path.dirname(this.src)),
+                        query: {
+                            cacheDirectory: true,
+                            presets: ['es2015'],
+                            plugins: ['transform-runtime']
+                        }
                     }
                 ]
-            },
-            babel: {
-                presets: ['es2015'],
-                plugins: ['transform-runtime']
             }
         };
 
@@ -78,12 +78,6 @@ export default class Webpack {
 
                 var stat = stats.toJson();
                 var assets = stat.assets;
-
-                // assets.forEach(function (file) {
-                //     if ( file.emitted ) {
-                //         uploadFiles.push(path.resolve(path.dirname(this.src)) + '/' + file.name);
-                //     }
-                // });
             }
         });
     }
@@ -103,12 +97,6 @@ export default class Webpack {
 
                 var stat = stats.toJson();
                 var assets = stat.assets;
-
-                // assets.forEach(function (file) {
-                //     if ( file.emitted ) {
-                //         uploadFiles.push(path.resolve(path.dirname(src)) + '/' + file.name);
-                //     }
-                // });
             }
         });
     }

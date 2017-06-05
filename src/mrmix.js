@@ -47,9 +47,3 @@ export default class MrMix {
         return this;
     }
 }
-
-// export default function MrMix (tasks) {
-//     let runner = new Runner();
-//
-//     tasks(runner);
-// }

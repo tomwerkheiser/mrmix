@@ -18,8 +18,8 @@ import Log from '../helpers/Log';
 
 export default class Sass {
     constructor(src, dest, options) {
-        this.graph;
-        this.gaze;
+        this.graph = false;
+        this.gaze = false;
         this.defaultOptions = {
             outputStyle: isProduction() ? 'compressed' : 'expand',
             linefeed: 'lf',
