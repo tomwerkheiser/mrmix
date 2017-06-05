@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import webpack from 'webpack';
+import webpack from 'webpack'
 import {isDirectory, shouldWatch} from '../helpers/file';
 import {writeHeader, writeLn, writeSpace} from '../helpers/console';
 

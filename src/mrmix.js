@@ -42,7 +42,7 @@ export default class MrMix {
     }
 
     babel(src, dest, options) {
-        new Babel(src, dest, options);
+        new Babel(src, dest, option);
 
         return this;
     }
