@@ -1,9 +1,7 @@
-'use strict';
-
 import Sass from './tasks/Sass';
 import Copy from './tasks/Copy';
 import Webpack from './tasks/Webpack';
-import  Combine from './tasks/Combine';
+import Combine from './tasks/Combine';
 import Babel from './tasks/Babel';
 
 export default class MrMix {
@@ -19,7 +17,7 @@ export default class MrMix {
         return this;
     }
 
-    webpack(src, dest, options) {
+    js(src, dest, options) {
         new Webpack(src, dest, options);
 
         return this;
