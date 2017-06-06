@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import webpack from 'webpack'
-import {isDirectory, shouldWatch} from '../helpers/file';
+import {isDirectory, shouldWatch, parseDirectory} from '../helpers/file';
 import {writeHeader, writeLn, writeSpace} from '../helpers/console';
 
 export default class Webpack {
@@ -11,7 +11,9 @@ export default class Webpack {
         this.src = src;
         this.dest = dest;
         this.options = options;
+        this.fileName = '';
 
+        this.parseDest();
         this.watch = shouldWatch();
 
         this.boot();
@@ -30,13 +32,21 @@ export default class Webpack {
         }
     }
 
+    parseDest() {
+        if ( !isDirectory(this.dest) ) {
+            this.fileName = path.basename(this.dest);
+            this.dest = parseDirectory(this.dest);
+        }
+    }
+
     setup() {
         let config = {
-            entry: path.resolve(this.src),
+            entry: this.getEntry(),
             output: {
                 filename: "[name].js",
                 path: path.resolve(this.dest),
-                publicPath: path.resolve(this.dest)
+                publicPath: path.resolve(this.dest),
+                chunkFilename: "[name].js"
             },
             resolve: {
                 modules: [
@@ -64,6 +74,20 @@ export default class Webpack {
         config = Object.assign(config, this.options);
 
         this.compiler = webpack(config);
+    }
+
+    getEntry() {
+        let entry = {};
+
+        if ( isDirectory(this.src) ) {
+
+        } else {
+            let key = path.basename(this.src, path.extname(this.src));
+
+            entry[key] = path.resolve(this.src);
+
+            return entry;
+        }
     }
 
     compile() {
