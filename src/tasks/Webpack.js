@@ -3,6 +3,7 @@ import fs from 'fs';
 import webpack from 'webpack'
 import {isDirectory, shouldWatch, parseDirectory} from '../helpers/file';
 import {writeHeader, writeLn, writeSpace} from '../helpers/console';
+import merge from 'webpack-merge';
 
 export default class Webpack {
     constructor(src, dest, options) {
@@ -48,14 +49,35 @@ export default class Webpack {
                 publicPath: path.resolve(this.dest),
                 chunkFilename: "[name].js"
             },
+            externals: {
+                "jquery": "jQuery",
+                "jQuery": "jQuery",
+                "$": "jQuery"
+            },
             resolve: {
                 modules: [
                     path.resolve(path.dirname(this.src)),
                     "node_modules"
-                ]
+                ],
+
+                extensions: ['*', '.js', '.vue'],
+
+                alias: {
+                    'vue$': 'vue/dist/vue.common.js'
+                }
             },
             module: {
                 rules: [
+                    {
+                        test: /\.vue$/,
+                        loader: 'vue-loader',
+                        include: path.resolve(path.dirname(this.src)),
+                        options: {
+                            loaders: {
+                                js: 'babel-loader'
+                            }
+                        }
+                    },
                     {
                         test: /\.js$/,
                         exclude: /node_modules/,
@@ -71,7 +93,7 @@ export default class Webpack {
             }
         };
 
-        config = Object.assign(config, this.options);
+        config = merge(config, this.options);
 
         this.compiler = webpack(config);
     }
@@ -108,8 +130,9 @@ export default class Webpack {
 
     watcher() {
         this.compiler.watch({
-            aggregateTimeout: 200,
-            poll: true
+            aggregateTimeout: 300,
+            poll: false,
+            ignored: /node_modules/
         }, function (err, stats) {
             if ( err ) {
                 console.log('ERROR: ', err);
