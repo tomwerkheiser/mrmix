@@ -5,6 +5,7 @@ import grapher from 'sass-graph';
 import Gaze from 'gaze';
 import fs from 'fs';
 import colors from 'colors';
+import tildeImporter from 'node-sass-tilde-importer';
 
 // Internal Dependencies
 import {
@@ -23,7 +24,8 @@ export default class Sass {
         this.defaultOptions = {
             outputStyle: isProduction() ? 'compressed' : 'expand',
             linefeed: 'lf',
-            output: dest
+            output: dest,
+            importer: tildeImporter
         }
 
         this.src = src;
