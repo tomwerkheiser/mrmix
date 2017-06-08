@@ -1,8 +1,8 @@
-import Sass from './tasks/Sass';
-import Copy from './tasks/Copy';
-import Webpack from './tasks/Webpack';
-import Combine from './tasks/Combine';
-import Babel from './tasks/Babel';
+import Sass from './tasks/sass';
+import Copy from './tasks/copy';
+import Webpack from './tasks/webpack';
+import Combine from './tasks/combine';
+import Babel from './tasks/babel';
 
 export default class MrMix {
     sass(src, dest, options) {

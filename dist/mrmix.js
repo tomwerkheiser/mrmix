@@ -6,25 +6,25 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Sass = require('./tasks/Sass');
+var _sass = require('./tasks/sass');
 
-var _Sass2 = _interopRequireDefault(_Sass);
+var _sass2 = _interopRequireDefault(_sass);
 
-var _Copy = require('./tasks/Copy');
+var _copy = require('./tasks/copy');
 
-var _Copy2 = _interopRequireDefault(_Copy);
+var _copy2 = _interopRequireDefault(_copy);
 
-var _Webpack = require('./tasks/Webpack');
+var _webpack = require('./tasks/webpack');
 
-var _Webpack2 = _interopRequireDefault(_Webpack);
+var _webpack2 = _interopRequireDefault(_webpack);
 
-var _Combine = require('./tasks/Combine');
+var _combine = require('./tasks/combine');
 
-var _Combine2 = _interopRequireDefault(_Combine);
+var _combine2 = _interopRequireDefault(_combine);
 
-var _Babel = require('./tasks/Babel');
+var _babel = require('./tasks/babel');
 
-var _Babel2 = _interopRequireDefault(_Babel);
+var _babel2 = _interopRequireDefault(_babel);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -38,49 +38,49 @@ var MrMix = function () {
     _createClass(MrMix, [{
         key: 'sass',
         value: function sass(src, dest, options) {
-            new _Sass2.default(src, dest, options);
+            new _sass2.default(src, dest, options);
 
             return this;
         }
     }, {
         key: 'copy',
         value: function copy(src, dest) {
-            new _Copy2.default(src, dest);
+            new _copy2.default(src, dest);
 
             return this;
         }
     }, {
         key: 'js',
         value: function js(src, dest, options) {
-            new _Webpack2.default(src, dest, options);
+            new _webpack2.default(src, dest, options);
 
             return this;
         }
     }, {
         key: 'combine',
         value: function combine(src, dest, fileName) {
-            new _Combine2.default(src, dest, fileName);
+            new _combine2.default(src, dest, fileName);
 
             return this;
         }
     }, {
         key: 'scripts',
         value: function scripts(src, dest, fileName) {
-            new _Combine2.default(src, dest, fileName || 'app.js', 'js');
+            new _combine2.default(src, dest, fileName || 'app.js', 'js');
 
             return this;
         }
     }, {
         key: 'styles',
         value: function styles(src, dest, fileName) {
-            new _Combine2.default(src, dest, fileName || 'app.css', 'css');
+            new _combine2.default(src, dest, fileName || 'app.css', 'css');
 
             return this;
         }
     }, {
         key: 'babel',
         value: function babel(src, dest, options) {
-            new _Babel2.default(src, dest, option);
+            new _babel2.default(src, dest, option);
 
             return this;
         }
