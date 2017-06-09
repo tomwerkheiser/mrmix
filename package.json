@@ -7,9 +7,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel --presets es2015 src -d dist"
   },
-  "bin": {
-    "mrmix": "bin/mrmix.js"
-  },
   "author": "Tom Werkheiser",
   "license": "ISC",
   "dependencies": {
