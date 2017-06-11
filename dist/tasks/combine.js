@@ -10,6 +10,10 @@ var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
+var _os = require('os');
+
+var _os2 = _interopRequireDefault(_os);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -58,7 +62,7 @@ var Combine = function () {
             this.src.map(function (file) {
                 var reader = _fs2.default.readFileSync(file);
 
-                _fs2.default.appendFileSync(_this.getFileName(), reader);
+                _fs2.default.appendFileSync(_this.getFileName(), reader + _os2.default.EOL);
             });
         }
     }, {

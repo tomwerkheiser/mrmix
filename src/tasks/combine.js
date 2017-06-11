@@ -1,4 +1,5 @@
 import fs from 'fs';
+import os from 'os';
 
 export default class Combine {
     constructor(src, dest, fileName, type) {
@@ -36,7 +37,7 @@ export default class Combine {
         this.src.map((file) => {
             let reader = fs.readFileSync(file);
 
-            fs.appendFileSync(this.getFileName(), reader);
+            fs.appendFileSync(this.getFileName(), reader + os.EOL);
         });
     }
 
