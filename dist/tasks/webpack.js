@@ -163,7 +163,7 @@ var Webpack = function () {
                     console.log('ERROR: ', err);
                     (0, _notifier2.default)(err.message);
                 } else if (stats.hasErrors()) {
-                    var info = status.toJSON();
+                    var info = stats.toJSON();
 
                     (0, _notifier2.default)(info.errors);
                 } else {

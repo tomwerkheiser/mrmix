@@ -137,7 +137,7 @@ export default class Webpack {
                 console.log('ERROR: ', err);
                 notify(err.message);
             } else if ( stats.hasErrors() ) {
-                const info = status.toJSON();
+                const info = stats.toJSON();
 
                 notify(info.errors);
             } else {
