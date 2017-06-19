@@ -1,9 +1,9 @@
 import path from 'path';
-import fs from 'fs';
 import webpack from 'webpack'
 import {isDirectory, shouldWatch, parseDirectory} from '../helpers/file';
 import {writeHeader, writeLn, writeSpace} from '../helpers/console';
 import merge from 'webpack-merge';
+import notify from '../helpers/notifier';
 
 export default class Webpack {
     constructor(src, dest, options) {
@@ -122,8 +122,7 @@ export default class Webpack {
                 writeLn(stats.toString({colors: true, modules: false, chunks: false}));
                 writeSpace();
 
-                var stat = stats.toJson();
-                var assets = stat.assets;
+                notify('JS Build Successful');
             }
         });
     }
@@ -136,14 +135,14 @@ export default class Webpack {
         }, function (err, stats) {
             if ( err ) {
                 console.log('ERROR: ', err);
+                notify(err.message);
             } else {
                 writeHeader('Compiling Webpack JS Files...');
                 writeSpace();
                 writeLn(stats.toString({colors: true, modules: false, chunks: false}));
                 writeSpace();
 
-                var stat = stats.toJson();
-                var assets = stat.assets;
+                notify('JS Build Successful');
             }
         });
     }

@@ -10,10 +10,6 @@ var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
 
-var _fs = require('fs');
-
-var _fs2 = _interopRequireDefault(_fs);
-
 var _webpack = require('webpack');
 
 var _webpack2 = _interopRequireDefault(_webpack);
@@ -25,6 +21,10 @@ var _console = require('../helpers/console');
 var _webpackMerge = require('webpack-merge');
 
 var _webpackMerge2 = _interopRequireDefault(_webpackMerge);
+
+var _notifier = require('../helpers/notifier');
+
+var _notifier2 = _interopRequireDefault(_notifier);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -147,8 +147,7 @@ var Webpack = function () {
                     (0, _console.writeLn)(stats.toString({ colors: true, modules: false, chunks: false }));
                     (0, _console.writeSpace)();
 
-                    var stat = stats.toJson();
-                    var assets = stat.assets;
+                    (0, _notifier2.default)('JS Build Successful');
                 }
             });
         }
@@ -162,14 +161,14 @@ var Webpack = function () {
             }, function (err, stats) {
                 if (err) {
                     console.log('ERROR: ', err);
+                    (0, _notifier2.default)(err.message);
                 } else {
                     (0, _console.writeHeader)('Compiling Webpack JS Files...');
                     (0, _console.writeSpace)();
                     (0, _console.writeLn)(stats.toString({ colors: true, modules: false, chunks: false }));
                     (0, _console.writeSpace)();
 
-                    var stat = stats.toJson();
-                    var assets = stat.assets;
+                    (0, _notifier2.default)('JS Build Successful');
                 }
             });
         }

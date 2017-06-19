@@ -16,6 +16,7 @@ import {
     mkDirIfDoesntExist
 } from '../helpers/file';
 import Log from '../helpers/Log';
+import notify from '../helpers/notifier';
 
 export default class Sass {
     constructor(src, dest, options) {
@@ -108,6 +109,7 @@ export default class Sass {
                 try {
                     this.renderSassFile(file, this.getOutFilePath(file, fullPath));
                 } catch (Error) {
+                    notify(Error.message);
                     console.log(' ');
                     console.log(colors.bgRed.white('ERROR'));
                     console.log(Error.message);
@@ -127,6 +129,7 @@ export default class Sass {
 
             fs.writeFile(outFile, result.css, (err) => {
                 if (err) {
+                    notify(err.message);
                     console.log(' ');
                     console.log(colors.bgRed.white('ERROR'));
                     console.log(err.message);
