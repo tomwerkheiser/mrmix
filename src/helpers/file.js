@@ -1,6 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-import meow from 'meow';
+const fs =  require('fs-extra');
+const path =  require('path');
+const meow =  require('meow');
 
 const cli = meow();
 
@@ -19,7 +19,7 @@ export function isDirectory(dir) {
     } catch (e) {
         let ext = path.extname(dir);
 
-        return ext == '';
+        return ext === '';
     }
 }
 
@@ -33,7 +33,7 @@ export function mkDirIfDoesntExist(dir) {
     try {
         return fs.statSync(dir).isDirectory();
     } catch (e) {
-        return fs.mkdirSync(dir);
+        return fs.ensureDirSync(dir);
     }
 }
 

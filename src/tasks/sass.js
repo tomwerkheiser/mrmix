@@ -1,11 +1,11 @@
 // External Dependencies
-import path from 'path';
-import sass from 'node-sass';
-import grapher from 'sass-graph';
-import Gaze from 'gaze';
-import fs from 'fs';
-import colors from 'colors';
-import tildeImporter from 'node-sass-tilde-importer';
+const path = require('path');
+const sass = require('node-sass');
+const grapher = require('sass-graph');
+const Gaze = require('gaze');
+const fs = require('fs');
+const colors = require('colors');
+const tildeImporter = require('node-sass-tilde-importer');
 
 // Internal Dependencies
 import {
@@ -16,6 +16,7 @@ import {
     mkDirIfDoesntExist
 } from '../helpers/file';
 import Log from '../helpers/Log';
+import {notify} from '../helpers/notifier';
 
 export default class Sass {
     constructor(src, dest, options) {
@@ -54,19 +55,19 @@ export default class Sass {
             this.graph = grapher.parseFile(this.src, graphOptions);
         }
 
-        if ( this.watch ) {
-            Log.header('Getting Files to Watch...');
-            Log.space();
-            Log.space();
-
-            this.watcher();
-        } else {
-            if ( this.srcIsDirectory) {
-                this.renderDir();
-            } else {
-                this.compileSass(this.src);
-            }
-        }
+        // if ( this.watch ) {
+        //     Log.header('Getting Files to Watch...');
+        //     Log.space();
+        //     Log.space();
+        //
+        //     this.watcher();
+        // } else {
+        //     if ( this.srcIsDirectory) {
+        //         this.renderDir();
+        //     } else {
+        //         this.compileSass(this.src);
+        //     }
+        // }
     }
 
     watcher() {
@@ -103,11 +104,14 @@ export default class Sass {
         this.graph.visitAncestors(file, parent => files.push(parent));
 
         Log.header('Compiling Sass Files...');
-        files.forEach((file) => {
+        files.forEach((file, i, array) => {
+            console.log('I: ', i);
+            console.log('ARRAY: ', array);
             if (path.basename(file)[0] !== '_') {
                 try {
                     this.renderSassFile(file, this.getOutFilePath(file, fullPath));
                 } catch (Error) {
+                    notify(Error.message);
                     console.log(' ');
                     console.log(colors.bgRed.white('ERROR'));
                     console.log(Error.message);
@@ -127,6 +131,7 @@ export default class Sass {
 
             fs.writeFile(outFile, result.css, (err) => {
                 if (err) {
+                    notify(err.message);
                     console.log(' ');
                     console.log(colors.bgRed.white('ERROR'));
                     console.log(err.message);

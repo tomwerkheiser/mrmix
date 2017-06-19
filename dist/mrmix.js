@@ -33,12 +33,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var MrMix = function () {
     function MrMix() {
         _classCallCheck(this, MrMix);
+
+        this.tasks = {};
     }
 
     _createClass(MrMix, [{
         key: 'sass',
         value: function sass(src, dest, options) {
-            new _sass2.default(src, dest, options);
+            if (!('sass' in this.tasks)) {
+                this.tasks['sass'] = [];
+            }
+
+            this.tasks['sass'].push(new _sass2.default(src, dest, options));
+
+            console.log('TASKS: ', this.tasks);
 
             return this;
         }

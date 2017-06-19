@@ -44,6 +44,8 @@ var _Log = require('../helpers/Log');
 
 var _Log2 = _interopRequireDefault(_Log);
 
+var _notifier = require('../helpers/notifier');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -89,19 +91,19 @@ var Sass = function () {
                 this.graph = _sassGraph2.default.parseFile(this.src, graphOptions);
             }
 
-            if (this.watch) {
-                _Log2.default.header('Getting Files to Watch...');
-                _Log2.default.space();
-                _Log2.default.space();
-
-                this.watcher();
-            } else {
-                if (this.srcIsDirectory) {
-                    this.renderDir();
-                } else {
-                    this.compileSass(this.src);
-                }
-            }
+            // if ( this.watch ) {
+            //     Log.header('Getting Files to Watch...');
+            //     Log.space();
+            //     Log.space();
+            //
+            //     this.watcher();
+            // } else {
+            //     if ( this.srcIsDirectory) {
+            //         this.renderDir();
+            //     } else {
+            //         this.compileSass(this.src);
+            //     }
+            // }
         }
     }, {
         key: 'watcher',
@@ -149,11 +151,14 @@ var Sass = function () {
             });
 
             _Log2.default.header('Compiling Sass Files...');
-            files.forEach(function (file) {
+            files.forEach(function (file, i, array) {
+                console.log('I: ', i);
+                console.log('ARRAY: ', array);
                 if (_path2.default.basename(file)[0] !== '_') {
                     try {
                         _this2.renderSassFile(file, _this2.getOutFilePath(file, fullPath));
                     } catch (Error) {
+                        (0, _notifier.notify)(Error.message);
                         console.log(' ');
                         console.log(_colors2.default.bgRed.white('ERROR'));
                         console.log(Error.message);
@@ -174,6 +179,7 @@ var Sass = function () {
 
                 _fs2.default.writeFile(outFile, result.css, function (err) {
                     if (err) {
+                        (0, _notifier.notify)(err.message);
                         console.log(' ');
                         console.log(_colors2.default.bgRed.white('ERROR'));
                         console.log(err.message);

@@ -1,10 +1,14 @@
-import Sass from './tasks/sass';
-import Copy from './tasks/copy';
-import Webpack from './tasks/webpack';
-import Combine from './tasks/combine';
-import Babel from './tasks/babel';
+const Sass = require('./tasks/sass');
+const Copy = require('./tasks/copy');
+const Webpack = require('./tasks/webpack');
+const Combine = require('./tasks/combine');
+const Babel = require('./tasks/babel');
 
 export default class MrMix {
+    constructor() {
+        this.tasks = {}
+    }
+
     sass(src, dest, options) {
         new Sass(src, dest, options);
 

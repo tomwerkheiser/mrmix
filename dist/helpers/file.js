@@ -8,22 +8,11 @@ exports.mkDirIfDoesntExist = mkDirIfDoesntExist;
 exports.parseDirectory = parseDirectory;
 exports.shouldWatch = shouldWatch;
 exports.isProduction = isProduction;
+var fs = require('fs-extra');
+var path = require('path');
+var meow = require('meow');
 
-var _fs = require('fs');
-
-var _fs2 = _interopRequireDefault(_fs);
-
-var _path = require('path');
-
-var _path2 = _interopRequireDefault(_path);
-
-var _meow = require('meow');
-
-var _meow2 = _interopRequireDefault(_meow);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var cli = (0, _meow2.default)();
+var cli = meow();
 
 var flags = cli.flags;
 var input = cli.input;
@@ -36,11 +25,11 @@ var input = cli.input;
  */
 function isDirectory(dir) {
     try {
-        return _fs2.default.statSync(dir).isDirectory();
+        return fs.statSync(dir).isDirectory();
     } catch (e) {
-        var ext = _path2.default.extname(dir);
+        var ext = path.extname(dir);
 
-        return ext == '';
+        return ext === '';
     }
 }
 
@@ -52,9 +41,9 @@ function isDirectory(dir) {
  */
 function mkDirIfDoesntExist(dir) {
     try {
-        return _fs2.default.statSync(dir).isDirectory();
+        return fs.statSync(dir).isDirectory();
     } catch (e) {
-        return _fs2.default.mkdirSync(dir);
+        return fs.ensureDirSync(dir);
     }
 }
 
@@ -69,7 +58,7 @@ function parseDirectory(dir) {
         return dir;
     }
 
-    return _path2.default.dirname(dir);
+    return path.dirname(dir);
 }
 
 /**

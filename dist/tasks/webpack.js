@@ -4,27 +4,29 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // External Dependencies
+
+
+// Internal Dependencies
+
 
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
 
-var _fs = require('fs');
-
-var _fs2 = _interopRequireDefault(_fs);
-
 var _webpack = require('webpack');
 
 var _webpack2 = _interopRequireDefault(_webpack);
+
+var _webpackMerge = require('webpack-merge');
+
+var _webpackMerge2 = _interopRequireDefault(_webpackMerge);
 
 var _file = require('../helpers/file');
 
 var _console = require('../helpers/console');
 
-var _webpackMerge = require('webpack-merge');
-
-var _webpackMerge2 = _interopRequireDefault(_webpackMerge);
+var _notifier = require('../helpers/notifier');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -55,11 +57,11 @@ var Webpack = function () {
 
             this.setup();
 
-            if (this.watch) {
-                this.watcher();
-            } else {
-                this.compile();
-            }
+            // if ( this.watch ) {
+            //     this.watcher();
+            // } else {
+            //     this.compile();
+            // }
         }
     }, {
         key: 'parseDest',
@@ -147,8 +149,9 @@ var Webpack = function () {
                     (0, _console.writeLn)(stats.toString({ colors: true, modules: false, chunks: false }));
                     (0, _console.writeSpace)();
 
-                    var stat = stats.toJson();
-                    var assets = stat.assets;
+                    (0, _notifier.notify)('JS Build Successful');
+                    // var stat = stats.toJson();
+                    // var assets = stat.assets;
                 }
             });
         }
@@ -162,14 +165,16 @@ var Webpack = function () {
             }, function (err, stats) {
                 if (err) {
                     console.log('ERROR: ', err);
+                    (0, _notifier.notify)(err.message);
                 } else {
                     (0, _console.writeHeader)('Compiling Webpack JS Files...');
                     (0, _console.writeSpace)();
                     (0, _console.writeLn)(stats.toString({ colors: true, modules: false, chunks: false }));
                     (0, _console.writeSpace)();
 
-                    var stat = stats.toJson();
-                    var assets = stat.assets;
+                    (0, _notifier.notify)('JS Build Successful');
+                    // var stat = stats.toJson();
+                    // var assets = stat.assets;
                 }
             });
         }
