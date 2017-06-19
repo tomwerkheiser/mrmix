@@ -162,6 +162,10 @@ var Webpack = function () {
                 if (err) {
                     console.log('ERROR: ', err);
                     (0, _notifier2.default)(err.message);
+                } else if (stats.hasErrors()) {
+                    var info = status.toJSON();
+
+                    (0, _notifier2.default)(info.errors);
                 } else {
                     (0, _console.writeHeader)('Compiling Webpack JS Files...');
                     (0, _console.writeSpace)();

@@ -136,6 +136,10 @@ export default class Webpack {
             if ( err ) {
                 console.log('ERROR: ', err);
                 notify(err.message);
+            } else if ( stats.hasErrors() ) {
+                const info = status.toJSON();
+
+                notify(info.errors);
             } else {
                 writeHeader('Compiling Webpack JS Files...');
                 writeSpace();
