@@ -1,8 +1,12 @@
+// External Dependencies
 import path from 'path';
 import webpack from 'webpack'
+import merge from 'webpack-merge';
+import colors from 'colors';
+
+// Internal Dependencies
 import {isDirectory, shouldWatch, parseDirectory} from '../helpers/file';
 import {writeHeader, writeLn, writeSpace} from '../helpers/console';
-import merge from 'webpack-merge';
 import notify from '../helpers/notifier';
 
 export default class Webpack {
@@ -136,17 +140,23 @@ export default class Webpack {
             if ( err ) {
                 console.log('ERROR: ', err);
                 notify(err.message);
-            } else if ( stats.hasErrors() ) {
-                const info = stats.toJSON();
-
-                notify(info.errors);
             } else {
-                writeHeader('Compiling Webpack JS Files...');
-                writeSpace();
-                writeLn(stats.toString({colors: true, modules: false, chunks: false}));
-                writeSpace();
+                if ( stats.hasErrors() ) {
+                    const info = stats.toJson();
 
-                notify('JS Build Successful');
+                    writeSpace();
+                    console.log(colors.bgRed.white('ERROR'));
+                    console.log(info.errors[0]);
+                    writeSpace();
+                    notify(info.errors[0], true);
+                } else {
+                    notify('JS Build Successful');
+
+                    writeHeader('Compiling Webpack JS Files...');
+                    writeSpace();
+                    writeLn(stats.toString({colors: true, modules: false, chunks: false}));
+                    writeSpace();
+                }
             }
         });
     }

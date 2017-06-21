@@ -158,7 +158,7 @@ var Sass = function () {
                     try {
                         _this2.renderSassFile(file, _this2.getOutFilePath(file, fullPath));
                     } catch (Error) {
-                        (0, _notifier2.default)(Error.message);
+                        (0, _notifier2.default)(Error.message, true);
                         console.log(' ');
                         console.log(_colors2.default.bgRed.white('ERROR'));
                         console.log(Error.message);
@@ -179,7 +179,7 @@ var Sass = function () {
 
                 _fs2.default.writeFile(outFile, result.css, function (err) {
                     if (err) {
-                        (0, _notifier2.default)(err.message);
+                        (0, _notifier2.default)(err.message, true);
                         console.log(' ');
                         console.log(_colors2.default.bgRed.white('ERROR'));
                         console.log(err.message);

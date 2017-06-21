@@ -109,7 +109,7 @@ export default class Sass {
                 try {
                     this.renderSassFile(file, this.getOutFilePath(file, fullPath));
                 } catch (Error) {
-                    notify(Error.message);
+                    notify(Error.message, true);
                     console.log(' ');
                     console.log(colors.bgRed.white('ERROR'));
                     console.log(Error.message);
@@ -129,7 +129,7 @@ export default class Sass {
 
             fs.writeFile(outFile, result.css, (err) => {
                 if (err) {
-                    notify(err.message);
+                    notify(err.message, true);
                     console.log(' ');
                     console.log(colors.bgRed.white('ERROR'));
                     console.log(err.message);
