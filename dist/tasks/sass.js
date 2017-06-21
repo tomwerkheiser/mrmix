@@ -99,12 +99,12 @@ var Sass = function () {
                 _Log2.default.space();
 
                 this.watcher();
+            }
+
+            if (this.srcIsDirectory) {
+                this.renderDir();
             } else {
-                if (this.srcIsDirectory) {
-                    this.renderDir();
-                } else {
-                    this.compileSass(this.src);
-                }
+                this.compileSass(this.src);
             }
         }
     }, {

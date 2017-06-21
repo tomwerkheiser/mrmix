@@ -18,7 +18,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function notify(message) {
     var error = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-    var img_path = _path2.default.join(__dirname, '..', '..', 'images');
+    var img_path = _path2.default.resolve(_path2.default.join(__dirname, '..', '..', 'images'));
     var icon = error === false ? 'logo.png' : 'error.png';
 
     _nodeNotifier2.default.notify({
