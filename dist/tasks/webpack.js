@@ -22,11 +22,17 @@ var _webpackMerge = require('webpack-merge');
 
 var _webpackMerge2 = _interopRequireDefault(_webpackMerge);
 
+var _colors = require('colors');
+
+var _colors2 = _interopRequireDefault(_colors);
+
 var _file = require('../helpers/file');
 
 var _console = require('../helpers/console');
 
 var _notifier = require('../helpers/notifier');
+
+var _notifier2 = _interopRequireDefault(_notifier);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -149,9 +155,7 @@ var Webpack = function () {
                     (0, _console.writeLn)(stats.toString({ colors: true, modules: false, chunks: false }));
                     (0, _console.writeSpace)();
 
-                    (0, _notifier.notify)('JS Build Successful');
-                    // var stat = stats.toJson();
-                    // var assets = stat.assets;
+                    (0, _notifier2.default)('JS Build Successful');
                 }
             });
         }
@@ -165,16 +169,24 @@ var Webpack = function () {
             }, function (err, stats) {
                 if (err) {
                     console.log('ERROR: ', err);
-                    (0, _notifier.notify)(err.message);
+                    (0, _notifier2.default)(err.message);
                 } else {
-                    (0, _console.writeHeader)('Compiling Webpack JS Files...');
-                    (0, _console.writeSpace)();
-                    (0, _console.writeLn)(stats.toString({ colors: true, modules: false, chunks: false }));
-                    (0, _console.writeSpace)();
+                    if (stats.hasErrors()) {
+                        var info = stats.toJson();
 
-                    (0, _notifier.notify)('JS Build Successful');
-                    // var stat = stats.toJson();
-                    // var assets = stat.assets;
+                        (0, _console.writeSpace)();
+                        console.log(_colors2.default.bgRed.white('ERROR'));
+                        console.log(info.errors[0]);
+                        (0, _console.writeSpace)();
+                        (0, _notifier2.default)(info.errors[0], true);
+                    } else {
+                        (0, _notifier2.default)('JS Build Successful');
+
+                        (0, _console.writeHeader)('Compiling Webpack JS Files...');
+                        (0, _console.writeSpace)();
+                        (0, _console.writeLn)(stats.toString({ colors: true, modules: false, chunks: false }));
+                        (0, _console.writeSpace)();
+                    }
                 }
             });
         }

@@ -16,7 +16,7 @@ import {
     mkDirIfDoesntExist
 } from '../helpers/file';
 import Log from '../helpers/Log';
-import {notify} from '../helpers/notifier';
+import notify from '../helpers/notifier';
 
 export default class Sass {
     constructor(src, dest, options) {
@@ -55,19 +55,19 @@ export default class Sass {
             this.graph = grapher.parseFile(this.src, graphOptions);
         }
 
-        // if ( this.watch ) {
-        //     Log.header('Getting Files to Watch...');
-        //     Log.space();
-        //     Log.space();
-        //
-        //     this.watcher();
-        // } else {
-        //     if ( this.srcIsDirectory) {
-        //         this.renderDir();
-        //     } else {
-        //         this.compileSass(this.src);
-        //     }
-        // }
+        if ( this.watch ) {
+            Log.header('Getting Files to Watch...');
+            Log.space();
+            Log.space();
+
+            this.watcher();
+        }
+
+        if ( this.srcIsDirectory) {
+            this.renderDir();
+        } else {
+            this.compileSass(this.src);
+        }
     }
 
     watcher() {
@@ -111,7 +111,7 @@ export default class Sass {
                 try {
                     this.renderSassFile(file, this.getOutFilePath(file, fullPath));
                 } catch (Error) {
-                    notify(Error.message);
+                    notify(Error.message, true);
                     console.log(' ');
                     console.log(colors.bgRed.white('ERROR'));
                     console.log(Error.message);
@@ -131,7 +131,7 @@ export default class Sass {
 
             fs.writeFile(outFile, result.css, (err) => {
                 if (err) {
-                    notify(err.message);
+                    notify(err.message, true);
                     console.log(' ');
                     console.log(colors.bgRed.white('ERROR'));
                     console.log(err.message);

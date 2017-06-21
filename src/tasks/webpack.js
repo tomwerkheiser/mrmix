@@ -1,12 +1,13 @@
 // External Dependencies
-const path =  require('path');
-const webpack =  require('webpack');
-const merge =  require('webpack-merge');
+import path from 'path';
+import webpack from 'webpack'
+import merge from 'webpack-merge';
+import colors from 'colors';
 
 // Internal Dependencies
 import {isDirectory, shouldWatch, parseDirectory} from '../helpers/file';
 import {writeHeader, writeLn, writeSpace} from '../helpers/console';
-import {notify} from '../helpers/notifier';
+import notify from '../helpers/notifier';
 
 export default class Webpack {
     constructor(src, dest, options) {
@@ -126,8 +127,6 @@ export default class Webpack {
                 writeSpace();
 
                 notify('JS Build Successful');
-                // var stat = stats.toJson();
-                // var assets = stat.assets;
             }
         });
     }
@@ -142,14 +141,22 @@ export default class Webpack {
                 console.log('ERROR: ', err);
                 notify(err.message);
             } else {
-                writeHeader('Compiling Webpack JS Files...');
-                writeSpace();
-                writeLn(stats.toString({colors: true, modules: false, chunks: false}));
-                writeSpace();
+                if ( stats.hasErrors() ) {
+                    const info = stats.toJson();
 
-                notify('JS Build Successful');
-                // var stat = stats.toJson();
-                // var assets = stat.assets;
+                    writeSpace();
+                    console.log(colors.bgRed.white('ERROR'));
+                    console.log(info.errors[0]);
+                    writeSpace();
+                    notify(info.errors[0], true);
+                } else {
+                    notify('JS Build Successful');
+
+                    writeHeader('Compiling Webpack JS Files...');
+                    writeSpace();
+                    writeLn(stats.toString({colors: true, modules: false, chunks: false}));
+                    writeSpace();
+                }
             }
         });
     }
