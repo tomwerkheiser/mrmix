@@ -4,39 +4,20 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // External Dependencies
-
-
-// Internal Dependencies
-
-
-var _path = require('path');
-
-var _path2 = _interopRequireDefault(_path);
-
-var _webpack = require('webpack');
-
-var _webpack2 = _interopRequireDefault(_webpack);
-
-var _webpackMerge = require('webpack-merge');
-
-var _webpackMerge2 = _interopRequireDefault(_webpackMerge);
-
-var _colors = require('colors');
-
-var _colors2 = _interopRequireDefault(_colors);
-
-var _file = require('../helpers/file');
-
-var _console = require('../helpers/console');
-
-var _notifier = require('../helpers/notifier');
-
-var _notifier2 = _interopRequireDefault(_notifier);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+// External Dependencies
+var path = require('path');
+var webpack = require('webpack');
+var merge = require('webpack-merge');
+var colors = require('colors');
+
+// Internal Dependencies
+var file = require('../helpers/file');
+var log = require('../helpers/console');
+var notify = require('../helpers/notifier');
 
 var Webpack = function () {
     function Webpack(src, dest, options) {
@@ -50,7 +31,7 @@ var Webpack = function () {
         this.fileName = '';
 
         this.parseDest();
-        this.watch = (0, _file.shouldWatch)();
+        this.watch = file.shouldWatch();
 
         this.boot();
     }
@@ -58,8 +39,8 @@ var Webpack = function () {
     _createClass(Webpack, [{
         key: 'boot',
         value: function boot() {
-            (0, _console.writeHeader)('Getting JS Files for Webpack...');
-            (0, _console.writeSpace)();
+            log.writeHeader('Getting JS Files for Webpack...');
+            log.writeSpace();
 
             this.setup();
 
@@ -72,9 +53,9 @@ var Webpack = function () {
     }, {
         key: 'parseDest',
         value: function parseDest() {
-            if (!(0, _file.isDirectory)(this.dest)) {
-                this.fileName = _path2.default.basename(this.dest);
-                this.dest = (0, _file.parseDirectory)(this.dest);
+            if (!file.isDirectory(this.dest)) {
+                this.fileName = path.basename(this.dest);
+                this.dest = file.parseDirectory(this.dest);
             }
         }
     }, {
@@ -84,8 +65,8 @@ var Webpack = function () {
                 entry: this.getEntry(),
                 output: {
                     filename: "[name].js",
-                    path: _path2.default.resolve(this.dest),
-                    publicPath: _path2.default.resolve(this.dest),
+                    path: path.resolve(this.dest),
+                    publicPath: path.resolve(this.dest),
                     chunkFilename: "[name].js"
                 },
                 externals: {
@@ -94,7 +75,7 @@ var Webpack = function () {
                     "$": "jQuery"
                 },
                 resolve: {
-                    modules: [_path2.default.resolve(_path2.default.dirname(this.src)), "node_modules"],
+                    modules: [path.resolve(path.dirname(this.src)), "node_modules"],
 
                     extensions: ['*', '.js', '.vue'],
 
@@ -106,7 +87,7 @@ var Webpack = function () {
                     rules: [{
                         test: /\.vue$/,
                         loader: 'vue-loader',
-                        include: _path2.default.resolve(_path2.default.dirname(this.src)),
+                        include: path.resolve(path.dirname(this.src)),
                         options: {
                             loaders: {
                                 js: 'babel-loader'
@@ -116,7 +97,7 @@ var Webpack = function () {
                         test: /\.js$/,
                         exclude: /node_modules/,
                         loader: 'babel-loader',
-                        include: _path2.default.resolve(_path2.default.dirname(this.src)),
+                        include: path.resolve(path.dirname(this.src)),
                         query: {
                             cacheDirectory: true,
                             presets: ['es2015'],
@@ -126,19 +107,19 @@ var Webpack = function () {
                 }
             };
 
-            config = (0, _webpackMerge2.default)(config, this.options);
+            config = merge(config, this.options);
 
-            this.compiler = (0, _webpack2.default)(config);
+            this.compiler = webpack(config);
         }
     }, {
         key: 'getEntry',
         value: function getEntry() {
             var entry = {};
 
-            if ((0, _file.isDirectory)(this.src)) {} else {
-                var key = _path2.default.basename(this.src, _path2.default.extname(this.src));
+            if (file.isDirectory(this.src)) {} else {
+                var key = path.basename(this.src, path.extname(this.src));
 
-                entry[key] = _path2.default.resolve(this.src);
+                entry[key] = path.resolve(this.src);
 
                 return entry;
             }
@@ -150,12 +131,12 @@ var Webpack = function () {
                 if (err) {
                     console.log('ERROR: ', err);
                 } else {
-                    (0, _console.writeHeader)('Compiling Webpack JS Files...');
-                    (0, _console.writeSpace)();
-                    (0, _console.writeLn)(stats.toString({ colors: true, modules: false, chunks: false }));
-                    (0, _console.writeSpace)();
+                    log.writeHeader('Compiling Webpack JS Files...');
+                    log.writeSpace();
+                    log.writeLn(stats.toString({ colors: true, modules: false, chunks: false }));
+                    log.writeSpace();
 
-                    (0, _notifier2.default)('JS Build Successful');
+                    notify('JS Build Successful');
                 }
             });
         }
@@ -169,23 +150,23 @@ var Webpack = function () {
             }, function (err, stats) {
                 if (err) {
                     console.log('ERROR: ', err);
-                    (0, _notifier2.default)(err.message);
+                    notify(err.message);
                 } else {
                     if (stats.hasErrors()) {
                         var info = stats.toJson();
 
-                        (0, _console.writeSpace)();
-                        console.log(_colors2.default.bgRed.white('ERROR'));
+                        log.writeSpace();
+                        console.log(colors.bgRed.white('ERROR'));
                         console.log(info.errors[0]);
-                        (0, _console.writeSpace)();
-                        (0, _notifier2.default)(info.errors[0], true);
+                        log.writeSpace();
+                        notify(info.errors[0], true);
                     } else {
-                        (0, _notifier2.default)('JS Build Successful');
+                        notify('JS Build Successful');
 
-                        (0, _console.writeHeader)('Compiling Webpack JS Files...');
-                        (0, _console.writeSpace)();
-                        (0, _console.writeLn)(stats.toString({ colors: true, modules: false, chunks: false }));
-                        (0, _console.writeSpace)();
+                        log.writeHeader('Compiling Webpack JS Files...');
+                        log.writeSpace();
+                        log.writeLn(stats.toString({ colors: true, modules: false, chunks: false }));
+                        log.writeSpace();
                     }
                 }
             });

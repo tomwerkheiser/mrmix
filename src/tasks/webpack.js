@@ -1,15 +1,15 @@
 // External Dependencies
-import path from 'path';
-import webpack from 'webpack'
-import merge from 'webpack-merge';
-import colors from 'colors';
+const path = require('path');
+const webpack = require('webpack');
+const merge = require('webpack-merge');
+const colors = require('colors');
 
 // Internal Dependencies
-import {isDirectory, shouldWatch, parseDirectory} from '../helpers/file';
-import {writeHeader, writeLn, writeSpace} from '../helpers/console';
-import notify from '../helpers/notifier';
+const {isDirectory, shouldWatch, parseDirectory} = require('../helpers/file');
+const {writeHeader, writeLn, writeSpace} = require('../helpers/console');
+const notify = require('../helpers/notifier');
 
-export default class Webpack {
+class Webpack {
     constructor(src, dest, options) {
         this.compiler = false;
 
@@ -30,11 +30,11 @@ export default class Webpack {
 
         this.setup();
 
-        // if ( this.watch ) {
-        //     this.watcher();
-        // } else {
-        //     this.compile();
-        // }
+        if ( this.watch ) {
+            this.watcher();
+        } else {
+            this.compile();
+        }
     }
 
     parseDest() {
@@ -85,13 +85,8 @@ export default class Webpack {
                     {
                         test: /\.js$/,
                         exclude: /node_modules/,
-                        loader: 'babel-loader',
+                        loader: 'babel-loader?cacheDirectory=true,presets[]=es2015,plugins=transform-runtime',
                         include: path.resolve(path.dirname(this.src)),
-                        query: {
-                            cacheDirectory: true,
-                            presets: ['es2015'],
-                            plugins: ['transform-runtime']
-                        }
                     }
                 ]
             }
@@ -161,3 +156,5 @@ export default class Webpack {
         });
     }
 }
+
+module.exports = Webpack;

@@ -4,7 +4,7 @@ const Webpack = require('./tasks/webpack');
 const Combine = require('./tasks/combine');
 const Babel = require('./tasks/babel');
 
-export default class MrMix {
+class MrMix {
     constructor() {
         this.tasks = {}
     }
@@ -51,3 +51,5 @@ export default class MrMix {
         return this;
     }
 }
+
+module.exports = MrMix;

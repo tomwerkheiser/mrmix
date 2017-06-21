@@ -1,12 +1,9 @@
 // External Dependencies
-import webpack from 'webpack';
-import path from 'path';
+const webpack = require('webpack');
+const path = require('path');
 
 // Internal Dependencies
-import Log from '../helpers/Log';
-import {
-    isDirectory
-} from '../helpers/file';
+const file = require('../helpers/file');
 
 let defaultConfig = {
     module: {
@@ -24,13 +21,13 @@ let defaultConfig = {
     },
 };
 
-export default class Babel {
+class Babel {
     constructor(src, dest, options) {
         this.src = src;
         this.dest = dest;
         this.parsedPath = {};
         this.defaultConfig = defaultConfig;
-        this.srcIsDirectory = isDirectory(this.src);
+        this.srcIsDirectory = file.isDirectory(this.src);
 
         this.boot();
     }
@@ -61,7 +58,7 @@ export default class Babel {
     getPath() {
         let parsed = this.getParsedPath();
 
-        if ( isDirectory(this.dest)) {
+        if ( file.isDirectory(this.dest)) {
             return `${parsed.dir}/${parsed.base}`;
         }
 
@@ -88,3 +85,5 @@ export default class Babel {
         return this.parsedPath;
     }
 }
+
+module.exports = Babel;

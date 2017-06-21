@@ -1,7 +1,7 @@
-import notifier from 'node-notifier';
-import path from 'path';
+const notifier = require('node-notifier');
+const path = require('path');
 
-export default function notify(message, error = false) {
+module.exports = function(message, error = false) {
     const img_path = path.resolve(path.join(__dirname, '..', '..', 'images'));
     const icon = error === false ? 'logo.png' : 'error.png';
 

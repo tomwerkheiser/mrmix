@@ -6,15 +6,10 @@ Object.defineProperty(exports, "__esModule", {
 exports.writeHeader = writeHeader;
 exports.writeLn = writeLn;
 exports.writeSpace = writeSpace;
-
-var _colors = require('colors');
-
-var _colors2 = _interopRequireDefault(_colors);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var colors = require('colors');
 
 function writeHeader(message) {
-    console.log(_colors2.default.bgGreen.black(message));
+    console.log(colors.bgGreen.black(message));
 }
 
 function writeLn(message) {

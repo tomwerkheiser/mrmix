@@ -6,18 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _file = require('../helpers/file');
-
-var _Log = require('../helpers/Log');
-
-var _Log2 = _interopRequireDefault(_Log);
-
-var _notifier = require('../helpers/notifier');
-
-var _notifier2 = _interopRequireDefault(_notifier);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 // External Dependencies
@@ -25,11 +13,14 @@ var path = require('path');
 var sass = require('node-sass');
 var grapher = require('sass-graph');
 var Gaze = require('gaze');
-var fs = require('fs');
+var fs = require('fs-extra');
 var colors = require('colors');
 var tildeImporter = require('node-sass-tilde-importer');
 
 // Internal Dependencies
+var file = require('../helpers/file');
+var Log = require('../helpers/Log');
+var notify = require('../helpers/notifier');
 
 var Sass = function () {
     function Sass(src, dest, options) {
@@ -38,7 +29,7 @@ var Sass = function () {
         this.graph = false;
         this.gaze = false;
         this.defaultOptions = {
-            outputStyle: (0, _file.isProduction)() ? 'compressed' : 'expand',
+            outputStyle: file.isProduction() ? 'compressed' : 'expand',
             linefeed: 'lf',
             output: dest,
             importer: tildeImporter
@@ -46,10 +37,10 @@ var Sass = function () {
 
         this.src = src;
         this.dest = dest;
-        this.srcIsDirectory = (0, _file.isDirectory)(src);
-        this.destIsDirectory = (0, _file.isDirectory)(dest);
+        this.srcIsDirectory = file.isDirectory(src);
+        this.destIsDirectory = file.isDirectory(dest);
 
-        this.watch = (0, _file.shouldWatch)();
+        this.watch = file.shouldWatch();
 
         this.sassOptions = Object.assign({}, this.defaultOptions, options);
 
@@ -73,9 +64,9 @@ var Sass = function () {
             }
 
             if (this.watch) {
-                _Log2.default.header('Getting Files to Watch...');
-                _Log2.default.space();
-                _Log2.default.space();
+                Log.header('Getting Files to Watch...');
+                Log.space();
+                Log.space();
 
                 this.watcher();
             }
@@ -107,15 +98,15 @@ var Sass = function () {
             });
 
             this.gaze.on('ready', function () {
-                _Log2.default.header('Ready');
-                _Log2.default.space();
+                Log.header('Ready');
+                Log.space();
             });
         }
     }, {
         key: 'renderDir',
         value: function renderDir() {
-            for (var file in this.graph.index) {
-                this.compileSass(file);
+            for (var _file in this.graph.index) {
+                this.compileSass(_file);
             }
         }
     }, {
@@ -131,7 +122,7 @@ var Sass = function () {
                 return files.push(parent);
             });
 
-            _Log2.default.header('Compiling Sass Files...');
+            Log.header('Compiling Sass Files...');
             files.forEach(function (file, i, array) {
                 console.log('I: ', i);
                 console.log('ARRAY: ', array);
@@ -139,7 +130,7 @@ var Sass = function () {
                     try {
                         _this2.renderSassFile(file, _this2.getOutFilePath(file, fullPath));
                     } catch (Error) {
-                        (0, _notifier2.default)(Error.message, true);
+                        notify(Error.message, true);
                         console.log(' ');
                         console.log(colors.bgRed.white('ERROR'));
                         console.log(Error.message);
@@ -156,11 +147,11 @@ var Sass = function () {
             var result = sass.renderSync(this.sassOptions);
 
             if (!result.error) {
-                (0, _file.mkDirIfDoesntExist)((0, _file.parseDirectory)(outFile));
+                file.mkDirIfDoesntExist(file.parseDirectory(outFile));
 
                 fs.writeFile(outFile, result.css, function (err) {
                     if (err) {
-                        (0, _notifier2.default)(err.message, true);
+                        notify(err.message, true);
                         console.log(' ');
                         console.log(colors.bgRed.white('ERROR'));
                         console.log(err.message);

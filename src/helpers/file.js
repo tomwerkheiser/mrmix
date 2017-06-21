@@ -13,7 +13,7 @@ const input = cli.input;
  * @param dir
  * @returns {*}
  */
-export function isDirectory(dir) {
+function isDirectory(dir) {
     try {
         return fs.statSync(dir).isDirectory();
     } catch (e) {
@@ -29,7 +29,7 @@ export function isDirectory(dir) {
  * @param dir
  * @returns {*}
  */
-export function mkDirIfDoesntExist(dir) {
+function mkDirIfDoesNotExist(dir) {
     try {
         return fs.statSync(dir).isDirectory();
     } catch (e) {
@@ -43,7 +43,7 @@ export function mkDirIfDoesntExist(dir) {
  * @param dir
  * @returns {*}
  */
-export function parseDirectory(dir) {
+function parseDirectory(dir) {
     if ( isDirectory(dir) ) {
         return dir;
     }
@@ -56,7 +56,7 @@ export function parseDirectory(dir) {
  *
  * @returns {string|Array|*|boolean}
  */
-export function shouldWatch() {
+function shouldWatch() {
     let watch = flags.w || flags.watch || false;
 
     if ( typeof input[0] != 'undefined' && !watch ) {
@@ -71,6 +71,13 @@ export function shouldWatch() {
  *
  * @returns {Array|string|*|boolean}
  */
-export function isProduction() {
+function isProduction() {
     return flags.p || flags.production || false
 }
+
+
+module.exports.isDirectory = isDirectory;
+module.exports.mkDirIfDoesNotExist = mkDirIfDoesNotExist;
+module.exports.parseDirectory = parseDirectory;
+module.exports.shouldWatch = shouldWatch;
+module.exports.isProduction = isProduction;

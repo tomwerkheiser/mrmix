@@ -1,9 +1,12 @@
-import path from 'path';
-import fs from 'fs';
-import {isDirectory, mkDirIfDoesntExist} from '../helpers/file';
-import {writeHeader, writeLn} from '../helpers/console';
+// External Dependencies
+const path = require('path');
+const fs = require('fs-extra');
 
-export default class Copy {
+// Internal Dependencies
+const file = require('../helpers/file');
+const log = require('../helpers/console');
+
+class Copy {
     constructor(src, dest) {
         this.src = src;
         this.dest = dest;
@@ -12,7 +15,7 @@ export default class Copy {
     }
 
     boot() {
-        writeHeader('Copying Files...');
+        log.writeHeader('Copying Files...');
 
         if ( typeof this.src == 'object' ) {
             if ( Array.isArray(this.src)) {
@@ -21,7 +24,7 @@ export default class Copy {
                 this.copyObject();
             }
         } else {
-            if ( isDirectory(this.dest)) {
+            if ( file.isDirectory(this.dest)) {
                 this.copyDir();
             } else {
                 this.moveFile(this.src, this.dest);
@@ -50,10 +53,10 @@ export default class Copy {
 
     moveFile(src, dest) {
         let fileName = path.basename(src);
-        let destDir = isDirectory(dest) ? dest : path.dirname(dest);
+        let destDir = file.isDirectory(dest) ? dest : path.dirname(dest);
         let destFileName = `${destDir}/${fileName}`;
 
-        mkDirIfDoesntExist(destDir);
+        file.mkDirIfDoesntExist(destDir);
 
         let reader = fs.createReadStream(src);
         let writer = fs.createWriteStream(destFileName);
@@ -61,9 +64,11 @@ export default class Copy {
         reader.pipe(writer);
 
         reader.on('end', () => {
-            writeLn(`-  From: ${src}`);
-            writeLn(`     To: ${destFileName}`);
-            writeLn('  ');
+            log.writeLn(`-  From: ${src}`);
+            log.writeLn(`     To: ${destFileName}`);
+            log.writeLn('  ');
         });
     }
 }
+
+module.exports = Copy;
