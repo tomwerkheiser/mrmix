@@ -33,6 +33,12 @@ class Sass {
         this.sassOptions = Object.assign({}, this.defaultOptions, options);
 
         this.boot();
+
+        global.Events.on('run', () => {
+            setImmediate(() => {
+                this.run();
+            })
+        });
     }
 
     boot() {
@@ -48,7 +54,9 @@ class Sass {
             this.src = path.resolve(this.src);
             this.graph = grapher.parseFile(this.src, graphOptions);
         }
+    }
 
+    run() {
         if ( this.watch ) {
             Log.header('Getting Files to Watch...');
             Log.space();

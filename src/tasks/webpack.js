@@ -10,24 +10,32 @@ const {writeHeader, writeLn, writeSpace} = require('../helpers/console');
 const notify = require('../helpers/notifier');
 
 class Webpack {
-    constructor(src, dest, options) {
+    constructor(files, options) {
         this.compiler = false;
 
-        this.src = src;
-        this.dest = dest;
+        // this.src = src;
+        // this.dest = dest;
+        this.files = files;
         this.options = options;
         this.fileName = '';
 
-        this.parseDest();
+        // this.parseDest();
         this.watch = shouldWatch();
 
         this.boot();
+
+        global.Events.on('run', () => {
+            setImmediate(() => {
+                this.run();
+            })
+        });
     }
 
     boot() {
-        writeHeader('Getting JS Files for Webpack...');
-        writeSpace();
 
+    }
+
+    run() {
         this.setup();
 
         if ( this.watch ) {
@@ -37,10 +45,9 @@ class Webpack {
         }
     }
 
-    parseDest() {
-        if ( !isDirectory(this.dest) ) {
-            this.fileName = path.basename(this.dest);
-            this.dest = parseDirectory(this.dest);
+    parseDest(dest) {
+        if ( !isDirectory(dest) ) {
+            return parseDirectory(dest);
         }
     }
 
@@ -49,8 +56,7 @@ class Webpack {
             entry: this.getEntry(),
             output: {
                 filename: "[name].js",
-                path: path.resolve(this.dest),
-                publicPath: path.resolve(this.dest),
+                path: path.resolve('./'),
                 chunkFilename: "[name].js"
             },
             externals: {
@@ -59,10 +65,7 @@ class Webpack {
                 "$": "jQuery"
             },
             resolve: {
-                modules: [
-                    path.resolve(path.dirname(this.src)),
-                    "node_modules"
-                ],
+                modules: this.getResolveModules(),
 
                 extensions: ['*', '.js', '.vue'],
 
@@ -75,7 +78,6 @@ class Webpack {
                     {
                         test: /\.vue$/,
                         loader: 'vue-loader',
-                        include: path.resolve(path.dirname(this.src)),
                         options: {
                             loaders: {
                                 js: 'babel-loader'
@@ -86,7 +88,6 @@ class Webpack {
                         test: /\.js$/,
                         exclude: /node_modules/,
                         loader: 'babel-loader?cacheDirectory=true,presets[]=es2015,plugins=transform-runtime',
-                        include: path.resolve(path.dirname(this.src)),
                     }
                 ]
             }
@@ -100,15 +101,36 @@ class Webpack {
     getEntry() {
         let entry = {};
 
-        if ( isDirectory(this.src) ) {
+        // if ( isDirectory(this.src) ) {
 
-        } else {
-            let key = path.basename(this.src, path.extname(this.src));
+        // } else {
+            for ( let src in this.files ) {
+                let key = path.join(this.files[src], path.basename(src, path.extname(src)));
 
-            entry[key] = path.resolve(this.src);
+                entry[key] = path.resolve(src);
+            }
 
             return entry;
-        }
+        // }
+    }
+
+    addEntry(file) {
+        this.files = Object.assign(this.files, file);
+    }
+
+    getResolveModules() {
+        let paths = ["node_modules"];
+
+        // for ( let i in this.files ) {
+
+            // path.resolve(path.dirname(this.src))
+        // }
+
+        // if ( paths.length === 0 ) {
+        //     return '';
+        // }
+
+        return paths;
     }
 
     compile() {
@@ -145,6 +167,7 @@ class Webpack {
                     writeSpace();
                     notify(info.errors[0], true);
                 } else {
+                    // console.log('\x1Bc');
                     notify('JS Build Successful');
 
                     writeHeader('Compiling Webpack JS Files...');

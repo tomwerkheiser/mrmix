@@ -3,14 +3,23 @@ const Copy = require('./tasks/copy');
 const Webpack = require('./tasks/webpack');
 const Combine = require('./tasks/combine');
 const Babel = require('./tasks/babel');
+const Events = require('events');
+
+global.Events = new Events;
 
 class MrMix {
     constructor() {
-        this.tasks = {}
+        this.tasks = {};
+
+        setImmediate(() => {
+            global.Events.emit('run');
+        });
     }
 
     sass(src, dest, options) {
-        new Sass(src, dest, options);
+        if ( !('sass' in this.tasks) ) this.tasks['sass'] = [];
+
+        this.tasks.sass.push(new Sass(src, dest, options));
 
         return this;
     }
@@ -22,7 +31,13 @@ class MrMix {
     }
 
     js(src, dest, options) {
-        new Webpack(src, dest, options);
+        if ( !('webpack' in this.tasks) ) {
+            this.tasks['webpack'] = [];
+            this.tasks.webpack.push(new Webpack({[src]: dest}, options));
+        } else {
+            this.tasks.webpack[0].addEntry({[src]: dest});
+        }
+
 
         return this;
     }
