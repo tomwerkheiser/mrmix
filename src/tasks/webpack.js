@@ -132,8 +132,13 @@ export default class Webpack {
     }
 
     watcher() {
-        let watch_poll = typeof options.watch_poll === 'undefined' ? false : options.watch_poll;
-        let watch_timeout = typeof options.watch_timeout === 'undefined' ? 300 : options.watch_timeout;
+        let watch_poll = false;
+        let watch_timeout = 300;
+
+        if ( typeof this.options.watchOptions !== 'undefined' ) {
+            watch_poll = this.options.watchOptions.poll === 'undefined' ? false : this.options.watchOptions.poll;
+            watch_timeout = this.options.watchOptions.aggregateTimeout === 'undefined' ? 300 : this.options.watchOptions.aggregateTimeout;
+        }
 
         this.compiler.watch({
             aggregateTimeout: watch_timeout,
