@@ -132,9 +132,12 @@ export default class Webpack {
     }
 
     watcher() {
+        let watch_poll = typeof options.watch_poll === 'undefined' ? false : options.watch_poll;
+        let watch_timeout = typeof options.watch_timeout === 'undefined' ? false : options.watch_timeout;
+
         this.compiler.watch({
-            aggregateTimeout: 300,
-            poll: false,
+            aggregateTimeout: watch_timeout,
+            poll: watch_poll,
             ignored: /node_modules/
         }, function (err, stats) {
             if ( err ) {
