@@ -163,7 +163,7 @@ var Webpack = function () {
         key: 'watcher',
         value: function watcher() {
             var watch_poll = typeof options.watch_poll === 'undefined' ? false : options.watch_poll;
-            var watch_timeout = typeof options.watch_timeout === 'undefined' ? false : options.watch_timeout;
+            var watch_timeout = typeof options.watch_timeout === 'undefined' ? 300 : options.watch_timeout;
 
             this.compiler.watch({
                 aggregateTimeout: watch_timeout,
