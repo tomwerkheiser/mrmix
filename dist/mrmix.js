@@ -22,9 +22,9 @@ var _combine = require('./tasks/combine');
 
 var _combine2 = _interopRequireDefault(_combine);
 
-var _babel = require('./tasks/babel');
+//var _babel = require('./tasks/babel');
 
-var _babel2 = _interopRequireDefault(_babel);
+//var _babel2 = _interopRequireDefault(_babel);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -74,13 +74,6 @@ var MrMix = function () {
         key: 'styles',
         value: function styles(src, dest, fileName) {
             new _combine2.default(src, dest, fileName || 'app.css', 'css');
-
-            return this;
-        }
-    }, {
-        key: 'babel',
-        value: function babel(src, dest, options) {
-            new _babel2.default(src, dest, option);
 
             return this;
         }
