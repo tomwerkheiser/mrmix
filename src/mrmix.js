@@ -11,9 +11,9 @@ class MrMix {
     constructor() {
         this.tasks = {};
 
-        // setImmediate(() => {
-        //     global.Events.emit('run');
-        // });
+        setImmediate(() => {
+            global.Events.emit('run');
+        });
     }
 
     sass(src, dest, options) {
@@ -38,7 +38,6 @@ class MrMix {
         } else {
             this.tasks.webpack[0].addEntry({[src]: dest});
         }
-
 
         return this;
     }

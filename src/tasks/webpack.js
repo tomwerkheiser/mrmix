@@ -13,8 +13,6 @@ class Webpack {
     constructor(files, options) {
         this.compiler = false;
 
-        // this.src = src;
-        // this.dest = dest;
         this.files = files;
         this.options = options;
         this.fileName = '';
@@ -115,6 +113,7 @@ class Webpack {
     }
 
     addEntry(file) {
+        // TODO: this should only add if options is empty. else it should make webpack an array of the configs
         this.files = Object.assign(this.files, file);
     }
 
@@ -167,7 +166,6 @@ class Webpack {
                     writeSpace();
                     notify(info.errors[0], true);
                 } else {
-                    // console.log('\x1Bc');
                     notify('JS Build Successful');
 
                     writeHeader('Compiling Webpack JS Files...');
