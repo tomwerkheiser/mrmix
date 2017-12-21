@@ -1,9 +1,5 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -18,50 +14,72 @@ var colors = require('colors');
 var tildeImporter = require('node-sass-tilde-importer');
 
 // Internal Dependencies
-var file = require('../helpers/file');
+
+var _require = require('../helpers/file'),
+    isDirectory = _require.isDirectory,
+    shouldWatch = _require.shouldWatch,
+    isProduction = _require.isProduction,
+    parseDirectory = _require.parseDirectory,
+    mkDirIfDoesNotExist = _require.mkDirIfDoesNotExist;
+
 var Log = require('../helpers/Log');
 var notify = require('../helpers/notifier');
 
 var Sass = function () {
     function Sass(src, dest, options) {
+        var _this = this;
+
         _classCallCheck(this, Sass);
 
         this.graph = false;
         this.gaze = false;
         this.defaultOptions = {
-            outputStyle: file.isProduction() ? 'compressed' : 'expand',
+            outputStyle: isProduction() ? 'compressed' : 'expand',
             linefeed: 'lf',
-            output: dest,
+            output: path.normalize(dest),
             importer: tildeImporter
         };
 
-        this.src = src;
-        this.dest = dest;
-        this.srcIsDirectory = file.isDirectory(src);
-        this.destIsDirectory = file.isDirectory(dest);
+        this.src = path.normalize(src);
+        this.dest = path.normalize(dest);
 
-        this.watch = file.shouldWatch();
-
+        this.watch = shouldWatch();
         this.sassOptions = Object.assign({}, this.defaultOptions, options);
 
         this.boot();
+
+        global.Events.on('run', function () {
+            setImmediate(function () {
+                _this.run();
+            });
+        });
     }
 
     _createClass(Sass, [{
         key: 'boot',
         value: function boot() {
+            var _this2 = this;
+
             var graphOptions = { extensions: ['scss', 'css'] };
 
             if (typeof this.sassOptions.loadPaths != 'undefined') {
                 graphOptions.loadPaths = [this.sassOptions.loadPaths];
             }
 
-            if (this.srcIsDirectory) {
-                this.graph = grapher.parseDir(this.src, graphOptions);
-            } else {
-                this.src = path.resolve(this.src);
-                this.graph = grapher.parseFile(this.src, graphOptions);
-            }
+            isDirectory(this.src).then(function (isDir) {
+                if (isDir) {
+                    _this2.graph = grapher.parseDir(_this2.src, graphOptions);
+                } else {
+                    _this2.graph = grapher.parseFile(_this2.src, graphOptions);
+                }
+
+                _this2.run();
+            });
+        }
+    }, {
+        key: 'run',
+        value: function run() {
+            var _this3 = this;
 
             if (this.watch) {
                 Log.header('Getting Files to Watch...');
@@ -71,16 +89,18 @@ var Sass = function () {
                 this.watcher();
             }
 
-            if (this.srcIsDirectory) {
-                this.renderDir();
-            } else {
-                this.compileSass(this.src);
-            }
+            isDirectory(this.src).then(function (isDir) {
+                if (isDir) {
+                    _this3.renderDir();
+                } else {
+                    _this3.compileSass(_this3.src);
+                }
+            });
         }
     }, {
         key: 'watcher',
         value: function watcher() {
-            var _this = this;
+            var _this4 = this;
 
             var watch = [];
 
@@ -94,7 +114,7 @@ var Sass = function () {
             this.gaze.add(watch);
 
             this.gaze.on('changed', function (file) {
-                return _this.compileSass(file);
+                return _this4.compileSass(file);
             });
 
             this.gaze.on('ready', function () {
@@ -105,14 +125,14 @@ var Sass = function () {
     }, {
         key: 'renderDir',
         value: function renderDir() {
-            for (var _file in this.graph.index) {
-                this.compileSass(_file);
+            for (var file in this.graph.index) {
+                this.compileSass(file);
             }
         }
     }, {
         key: 'compileSass',
         value: function compileSass(file) {
-            var _this2 = this;
+            var _this5 = this;
 
             var files = [file];
             var fullPath = path.resolve(this.src);
@@ -124,11 +144,11 @@ var Sass = function () {
 
             Log.header('Compiling Sass Files...');
             files.forEach(function (file, i, array) {
-                console.log('I: ', i);
-                console.log('ARRAY: ', array);
                 if (path.basename(file)[0] !== '_') {
                     try {
-                        _this2.renderSassFile(file, _this2.getOutFilePath(file, fullPath));
+                        _this5.getOutFilePath(file, fullPath).then(function (res) {
+                            _this5.renderSassFile(file, res);
+                        });
                     } catch (Error) {
                         notify(Error.message, true);
                         console.log(' ');
@@ -144,26 +164,33 @@ var Sass = function () {
         value: function renderSassFile(file, outFile) {
             this.sassOptions.file = file;
             this.sassOptions.outFile = outFile;
-            var result = sass.renderSync(this.sassOptions);
 
-            if (!result.error) {
-                file.mkDirIfDoesntExist(file.parseDirectory(outFile));
+            sass.render(this.sassOptions, function (err, result) {
+                if (err) {
+                    console.error('sass error');
+                    return;
+                }
 
-                fs.writeFile(outFile, result.css, function (err) {
-                    if (err) {
-                        notify(err.message, true);
+                parseDirectory(outFile).then(function (res) {
+                    mkDirIfDoesNotExist(res);
+                }).then(function () {
+                    fs.writeFile(outFile, result.css, function (err) {
+                        if (err) {
+                            notify(err.message, true);
+                            console.log(' ');
+                            console.log(colors.bgRed.white('ERROR'));
+                            console.log(err.message);
+                            console.log(' ');
+                            return;
+                        }
+
+                        console.log(' - ', file);
+                        console.log('   Time: ', colors.bold(result.stats.duration), 'ms');
+                        console.log('   Saved To: ', path.resolve(outFile));
                         console.log(' ');
-                        console.log(colors.bgRed.white('ERROR'));
-                        console.log(err.message);
-                        console.log(' ');
-                    }
+                    });
                 });
-            }
-
-            console.log(' - ', file);
-            console.log('   Time: ', colors.bold(result.stats.duration), 'ms');
-            console.log('   Saved To: ', path.resolve(outFile));
-            console.log(' ');
+            });
         }
     }, {
         key: 'getOutputPath',
@@ -173,31 +200,37 @@ var Sass = function () {
     }, {
         key: 'getOutFilePath',
         value: function getOutFilePath(file, fullPath) {
+            var _this6 = this;
+
             // name of file to save to.
             var outputPath = this.getOutputPath();
             var ext = path.extname(file);
             var name = path.basename(file, ext);
             var dirName = path.dirname(file);
 
-            if (!this.srcIsDirectory) {
-                fullPath = path.dirname(fullPath);
-            }
+            return isDirectory(this.src).then(function (isDir) {
+                if (!isDir) {
+                    fullPath = path.dirname(fullPath);
+                }
+            }).then(function () {
+                isDirectory(_this6.dest).then(function (isDir) {
+                    if (!isDir) {
+                        name = path.basename(_this6.sassOptions.output, '.css');
+                    }
+                });
+            }).then(function () {
+                if (fullPath != path.resolve(dirName)) {
+                    var sassDirName = dirName.replace(fullPath, '');
 
-            if (!this.destIsDirectory) {
-                name = path.basename(this.sassOptions.output, '.css');
-            }
+                    return path.join(_this6.sassOptions.output, sassDirName, name) + '.css';
+                }
 
-            if (fullPath != dirName) {
-                var sassDirName = dirName.replace(fullPath, '');
-
-                return path.join(this.sassOptions.output, sassDirName, name) + '.css';
-            }
-
-            return path.join(outputPath, name) + '.css';
+                return path.join(outputPath, name) + '.css';
+            });
         }
     }]);
 
     return Sass;
 }();
 
-exports.default = Sass;
+module.exports = Sass;

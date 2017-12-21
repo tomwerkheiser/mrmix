@@ -148,9 +148,17 @@ class Webpack {
     }
 
     watcher() {
+        let watch_poll = false;
+        let watch_timeout = 300;
+
+        if ( typeof this.options.watchOptions !== 'undefined' ) {
+            watch_poll = this.options.watchOptions.poll === 'undefined' ? false : this.options.watchOptions.poll;
+            watch_timeout = this.options.watchOptions.aggregateTimeout === 'undefined' ? 300 : this.options.watchOptions.aggregateTimeout;
+        }
+
         this.compiler.watch({
-            aggregateTimeout: 300,
-            poll: false,
+            aggregateTimeout: watch_timeout,
+            poll: watch_poll,
             ignored: /node_modules/
         }, function (err, stats) {
             if ( err ) {

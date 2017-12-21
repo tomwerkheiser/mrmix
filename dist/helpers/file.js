@@ -1,13 +1,5 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.isDirectory = isDirectory;
-exports.mkDirIfDoesntExist = mkDirIfDoesntExist;
-exports.parseDirectory = parseDirectory;
-exports.shouldWatch = shouldWatch;
-exports.isProduction = isProduction;
 var fs = require('fs-extra');
 var path = require('path');
 var meow = require('meow');
@@ -24,13 +16,13 @@ var input = cli.input;
  * @returns {*}
  */
 function isDirectory(dir) {
-    try {
-        return fs.statSync(dir).isDirectory();
-    } catch (e) {
+    return fs.stat(dir).then(function (stats) {
+        return stats.isDirectory();
+    }).catch(function () {
         var ext = path.extname(dir);
 
         return ext === '';
-    }
+    });
 }
 
 /**
@@ -39,12 +31,8 @@ function isDirectory(dir) {
  * @param dir
  * @returns {*}
  */
-function mkDirIfDoesntExist(dir) {
-    try {
-        return fs.statSync(dir).isDirectory();
-    } catch (e) {
-        return fs.ensureDirSync(dir);
-    }
+function mkDirIfDoesNotExist(dir) {
+    return fs.ensureDir(dir);
 }
 
 /**
@@ -54,11 +42,16 @@ function mkDirIfDoesntExist(dir) {
  * @returns {*}
  */
 function parseDirectory(dir) {
+    return isDirectory(dir).then(function (isDir) {
+        if (isDir) {
+            return dir;
+        } else {
+            return path.dirname(dir);
+        }
+    });
     if (isDirectory(dir)) {
         return dir;
     }
-
-    return path.dirname(dir);
 }
 
 /**
@@ -84,3 +77,9 @@ function shouldWatch() {
 function isProduction() {
     return flags.p || flags.production || false;
 }
+
+module.exports.isDirectory = isDirectory;
+module.exports.mkDirIfDoesNotExist = mkDirIfDoesNotExist;
+module.exports.parseDirectory = parseDirectory;
+module.exports.shouldWatch = shouldWatch;
+module.exports.isProduction = isProduction;

@@ -1,22 +1,12 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _fs = require('fs');
-
-var _fs2 = _interopRequireDefault(_fs);
-
-var _os = require('os');
-
-var _os2 = _interopRequireDefault(_os);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+// External Dependencies
+var fs = require('fs-extra');
+var os = require('os');
 
 var Combine = function () {
     function Combine(src, dest, fileName, type) {
@@ -36,7 +26,7 @@ var Combine = function () {
             this.checkDest();
 
             if (!Array.isArray(this.src)) {
-                if (_fs2.default.statSync(this.src).isDirectory()) {
+                if (fs.statSync(this.src).isDirectory()) {
                     this.parseDir();
                 }
 
@@ -60,9 +50,9 @@ var Combine = function () {
             this.checkFile();
 
             this.src.map(function (file) {
-                var reader = _fs2.default.readFileSync(file);
+                var reader = fs.readFileSync(file);
 
-                _fs2.default.appendFileSync(_this.getFileName(), reader + _os2.default.EOL);
+                fs.appendFileSync(_this.getFileName(), reader + os.EOL);
             });
         }
     }, {
@@ -71,7 +61,7 @@ var Combine = function () {
             var files = [];
             var filePath = this.src;
 
-            _fs2.default.readdirSync(this.src).forEach(function (file) {
+            fs.readdirSync(this.src).forEach(function (file) {
                 files.push(filePath + '/' + file);
             });
 
@@ -81,9 +71,9 @@ var Combine = function () {
         key: 'checkDest',
         value: function checkDest() {
             try {
-                return _fs2.default.statSync(this.dest).isDirectory();
+                return fs.statSync(this.dest).isDirectory();
             } catch (e) {
-                return _fs2.default.mkdirSync(this.dest);
+                return fs.mkdirSync(this.dest);
             }
         }
     }, {
@@ -92,9 +82,9 @@ var Combine = function () {
             var file = void 0;
 
             try {
-                file = _fs2.default.statSync(this.getFileName()).isFile();
+                file = fs.statSync(this.getFileName()).isFile();
 
-                _fs2.default.unlinkSync(this.getFileName());
+                fs.unlinkSync(this.getFileName());
             } catch (e) {}
         }
     }]);
@@ -102,4 +92,4 @@ var Combine = function () {
     return Combine;
 }();
 
-exports.default = Combine;
+module.exports = Combine;

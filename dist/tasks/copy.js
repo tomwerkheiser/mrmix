@@ -1,28 +1,18 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _path = require('path');
-
-var _path2 = _interopRequireDefault(_path);
-
-var _fs = require('fs');
-
-var _fs2 = _interopRequireDefault(_fs);
-
-var _file = require('../helpers/file');
-
-var _console = require('../helpers/console');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+// External Dependencies
+var path = require('path');
+var fs = require('fs-extra');
+
+// Internal Dependencies
+var file = require('../helpers/file');
+var log = require('../helpers/console');
 
 var Copy = function () {
     function Copy(src, dest) {
@@ -37,7 +27,9 @@ var Copy = function () {
     _createClass(Copy, [{
         key: 'boot',
         value: function boot() {
-            (0, _console.writeHeader)('Copying Files...');
+            var _this = this;
+
+            log.writeHeader('Copying Files...');
 
             if (_typeof(this.src) == 'object') {
                 if (Array.isArray(this.src)) {
@@ -46,11 +38,13 @@ var Copy = function () {
                     this.copyObject();
                 }
             } else {
-                if ((0, _file.isDirectory)(this.dest)) {
-                    this.copyDir();
-                } else {
-                    this.moveFile(this.src, this.dest);
-                }
+                file.isDirectory(this.src).then(function (isDir) {
+                    if (isDir) {
+                        _this.copyDir(_this.src);
+                    } else {
+                        _this.moveFile(_this.src, _this.dest);
+                    }
+                });
             }
         }
     }, {
@@ -62,40 +56,51 @@ var Copy = function () {
         }
     }, {
         key: 'copyDir',
-        value: function copyDir() {
-            var _this = this;
+        value: function copyDir(dir) {
+            var _this2 = this;
 
-            _fs2.default.readdirSync(this.src).forEach(function (file) {
-                _this.moveFile(_this.src + '/' + file, _this.dest);
+            fs.readdir(dir).then(function (files) {
+                files.forEach(function (f) {
+                    file.isDirectory(f).then(function (isDir) {
+                        if (isDir) {
+                            return _this2.copyDir(path.join(dir, f));
+                        } else {
+                            _this2.moveFile(path.join(dir, f), dir.replace(_this2.src, _this2.dest));
+                        }
+                    });
+                });
             });
         }
     }, {
         key: 'copyFiles',
         value: function copyFiles() {
-            var _this2 = this;
+            var _this3 = this;
 
             this.src.forEach(function (file) {
-                _this2.moveFile(file, _this2.dest);
+                _this3.moveFile(file, _this3.dest);
             });
         }
     }, {
         key: 'moveFile',
         value: function moveFile(src, dest) {
-            var fileName = _path2.default.basename(src);
-            var destDir = (0, _file.isDirectory)(dest) ? dest : _path2.default.dirname(dest);
-            var destFileName = destDir + '/' + fileName;
+            // TODO: Use dest file name and not src. In case someone wants a different name
+            file.isDirectory(dest).then(function (isDir) {
+                var fileName = path.basename(src);
+                var destDir = isDir ? dest : path.dirname(dest);
+                var destFileName = path.join(destDir, fileName);
 
-            (0, _file.mkDirIfDoesntExist)(destDir);
+                file.mkDirIfDoesNotExist(destDir);
 
-            var reader = _fs2.default.createReadStream(src);
-            var writer = _fs2.default.createWriteStream(destFileName);
+                var reader = fs.createReadStream(src);
+                var writer = fs.createWriteStream(destFileName);
 
-            reader.pipe(writer);
+                reader.pipe(writer);
 
-            reader.on('end', function () {
-                (0, _console.writeLn)('-  From: ' + src);
-                (0, _console.writeLn)('     To: ' + destFileName);
-                (0, _console.writeLn)('  ');
+                reader.on('end', function () {
+                    log.writeLn('-  From: ' + src);
+                    log.writeLn('     To: ' + destFileName);
+                    log.writeLn('  ');
+                });
             });
         }
     }]);
@@ -103,4 +108,4 @@ var Copy = function () {
     return Copy;
 }();
 
-exports.default = Copy;
+module.exports = Copy;

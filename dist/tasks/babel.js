@@ -1,32 +1,15 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // External Dependencies
-
-
-// Internal Dependencies
-
-
-var _webpack = require('webpack');
-
-var _webpack2 = _interopRequireDefault(_webpack);
-
-var _path = require('path');
-
-var _path2 = _interopRequireDefault(_path);
-
-var _Log = require('../helpers/Log');
-
-var _Log2 = _interopRequireDefault(_Log);
-
-var _file = require('../helpers/file');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+// External Dependencies
+var webpack = require('webpack');
+var path = require('path');
+
+// Internal Dependencies
+var file = require('../helpers/file');
 
 var defaultConfig = {
     module: {
@@ -50,7 +33,7 @@ var Babel = function () {
         this.dest = dest;
         this.parsedPath = {};
         this.defaultConfig = defaultConfig;
-        this.srcIsDirectory = (0, _file.isDirectory)(this.src);
+        this.srcIsDirectory = file.isDirectory(this.src);
 
         this.boot();
     }
@@ -58,7 +41,7 @@ var Babel = function () {
     _createClass(Babel, [{
         key: 'boot',
         value: function boot() {
-            this.defaultConfig.entry = _path2.default.resolve(this.src);
+            this.defaultConfig.entry = path.resolve(this.src);
             this.defaultConfig.output = {
                 path: this.getPath(),
                 filename: this.getFileName()
@@ -69,7 +52,7 @@ var Babel = function () {
     }, {
         key: 'compile',
         value: function compile() {
-            (0, _webpack2.default)(this.defaultConfig).run(function (err, stats) {
+            webpack(this.defaultConfig).run(function (err, stats) {
                 if (err) {
                     console.log('ERRORS');
                     return;
@@ -83,7 +66,7 @@ var Babel = function () {
         value: function getPath() {
             var parsed = this.getParsedPath();
 
-            if ((0, _file.isDirectory)(this.dest)) {
+            if (file.isDirectory(this.dest)) {
                 return parsed.dir + '/' + parsed.base;
             }
 
@@ -95,7 +78,7 @@ var Babel = function () {
             var parsed = this.getParsedPath();
 
             if (!this.srcIsDirectory) {
-                return _path2.default.parse(this.src).base;
+                return path.parse(this.src).base;
             } else if (this.srcIsDirectory || parsed.ext == '') {
                 return '[name].js';
             }
@@ -106,7 +89,7 @@ var Babel = function () {
         key: 'getParsedPath',
         value: function getParsedPath() {
             if (Object.keys(this.parsedPath).length == 0) {
-                this.parsedPath = _path2.default.parse(this.dest);
+                this.parsedPath = path.parse(this.dest);
             }
 
             return this.parsedPath;
@@ -116,4 +99,4 @@ var Babel = function () {
     return Babel;
 }();
 
-exports.default = Babel;
+module.exports = Babel;
