@@ -35,8 +35,6 @@ process.on('message', function (_ref) {
 
 var Webpack = function () {
     function Webpack(files, options) {
-        var _this = this;
-
         _classCallCheck(this, Webpack);
 
         this.compiler = false;
@@ -49,12 +47,12 @@ var Webpack = function () {
 
         this.boot();
 
-        // this.run();
-        global.Events.on('run', function () {
-            setImmediate(function () {
-                _this.run();
-            });
-        });
+        this.run();
+        // global.Events.on('run', () => {
+        //     setImmediate(() => {
+        //         this.run();
+        //     })
+        // });
     }
 
     _createClass(Webpack, [{
@@ -185,7 +183,7 @@ var Webpack = function () {
 
                     notify('JS Build Successful');
 
-                    // process.send({event: 'done'});
+                    process.send({ event: 'done' });
                 }
             });
         }
