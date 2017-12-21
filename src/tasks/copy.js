@@ -24,11 +24,14 @@ class Copy {
                 this.copyObject();
             }
         } else {
-            if ( file.isDirectory(this.dest)) {
-                this.copyDir();
-            } else {
-                this.moveFile(this.src, this.dest);
-            }
+            file.isDirectory(this.src)
+                .then(isDir => {
+                    if ( isDir ) {
+                        this.copyDir(this.src);
+                    } else {
+                        this.moveFile(this.src, this.dest);
+                    }
+                });
         }
     }
 
@@ -38,10 +41,19 @@ class Copy {
         }
     }
 
-    copyDir() {
-        fs.readdirSync(this.src)
-            .forEach((file) => {
-                this.moveFile(`${this.src}/${file}`, this.dest);
+    copyDir(dir) {
+        fs.readdir(dir)
+            .then(files => {
+                files.forEach((f) => {
+                    file.isDirectory(f)
+                        .then(isDir => {
+                            if ( isDir ) {
+                                return this.copyDir(path.join(dir, f));
+                            } else {
+                                this.moveFile(path.join(dir, f), dir.replace(this.src, this.dest));
+                            }
+                        });
+                });
             });
     }
 
@@ -52,22 +64,26 @@ class Copy {
     }
 
     moveFile(src, dest) {
-        let fileName = path.basename(src);
-        let destDir = file.isDirectory(dest) ? dest : path.dirname(dest);
-        let destFileName = `${destDir}/${fileName}`;
+        // TODO: Use dest file name and not src. In case someone wants a different name
+        file.isDirectory(dest)
+            .then(isDir => {
+                let fileName = path.basename(src);
+                let destDir = isDir ? dest : path.dirname(dest);
+                let destFileName = path.join(destDir, fileName);
 
-        file.mkDirIfDoesntExist(destDir);
+                file.mkDirIfDoesNotExist(destDir);
 
-        let reader = fs.createReadStream(src);
-        let writer = fs.createWriteStream(destFileName);
+                let reader = fs.createReadStream(src);
+                let writer = fs.createWriteStream(destFileName);
 
-        reader.pipe(writer);
+                reader.pipe(writer);
 
-        reader.on('end', () => {
-            log.writeLn(`-  From: ${src}`);
-            log.writeLn(`     To: ${destFileName}`);
-            log.writeLn('  ');
-        });
+                reader.on('end', () => {
+                    log.writeLn(`-  From: ${src}`);
+                    log.writeLn(`     To: ${destFileName}`);
+                    log.writeLn('  ');
+                });
+            });
     }
 }
 

@@ -11,15 +11,16 @@ class MrMix {
     constructor() {
         this.tasks = {};
 
-        setImmediate(() => {
-            global.Events.emit('run');
-        });
+        // setImmediate(() => {
+        //     global.Events.emit('run');
+        // });
     }
 
     sass(src, dest, options) {
-        if ( !('sass' in this.tasks) ) this.tasks['sass'] = [];
-
-        this.tasks.sass.push(new Sass(src, dest, options));
+        // if ( !('sass' in this.tasks) ) this.tasks['sass'] = [];
+        //
+        // this.tasks.sass.push(new Sass(src, dest, options));
+        new Sass(src, dest, options);
 
         return this;
     }

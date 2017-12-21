@@ -14,13 +14,15 @@ const input = cli.input;
  * @returns {*}
  */
 function isDirectory(dir) {
-    try {
-        return fs.statSync(dir).isDirectory();
-    } catch (e) {
-        let ext = path.extname(dir);
+    return fs.stat(dir)
+        .then(stats => {
+            return stats.isDirectory();
+        })
+        .catch(() => {
+            let ext = path.extname(dir);
 
-        return ext === '';
-    }
+            return ext === '';
+        });
 }
 
 /**
@@ -30,11 +32,7 @@ function isDirectory(dir) {
  * @returns {*}
  */
 function mkDirIfDoesNotExist(dir) {
-    try {
-        return fs.statSync(dir).isDirectory();
-    } catch (e) {
-        return fs.ensureDirSync(dir);
-    }
+    return fs.ensureDir(dir);
 }
 
 /**
@@ -44,11 +42,17 @@ function mkDirIfDoesNotExist(dir) {
  * @returns {*}
  */
 function parseDirectory(dir) {
+    return isDirectory(dir)
+        .then(isDir => {
+            if ( isDir ) {
+                return dir
+            } else {
+                return path.dirname(dir);
+            }
+        })
     if ( isDirectory(dir) ) {
         return dir;
     }
-
-    return path.dirname(dir);
 }
 
 /**

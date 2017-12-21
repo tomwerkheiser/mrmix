@@ -19,17 +19,14 @@ class Sass {
         this.defaultOptions = {
             outputStyle: isProduction() ? 'compressed' : 'expand',
             linefeed: 'lf',
-            output: dest,
+            output: path.normalize(dest),
             importer: tildeImporter
         }
 
-        this.src = src;
-        this.dest = dest;
-        this.srcIsDirectory = isDirectory(src);
-        this.destIsDirectory = isDirectory(dest);
+        this.src = path.normalize(src);
+        this.dest = path.normalize(dest);
 
         this.watch = shouldWatch();
-
         this.sassOptions = Object.assign({}, this.defaultOptions, options);
 
         this.boot();
@@ -48,12 +45,16 @@ class Sass {
             graphOptions.loadPaths = [this.sassOptions.loadPaths];
         }
 
-        if ( this.srcIsDirectory) {
-            this.graph = grapher.parseDir(this.src, graphOptions);
-        } else {
-            this.src = path.resolve(this.src);
-            this.graph = grapher.parseFile(this.src, graphOptions);
-        }
+        isDirectory(this.src)
+            .then(isDir => {
+                if ( isDir ) {
+                    this.graph = grapher.parseDir(this.src, graphOptions);
+                } else {
+                    this.graph = grapher.parseFile(this.src, graphOptions);
+                }
+
+                this.run();
+            });
     }
 
     run() {
@@ -65,11 +66,14 @@ class Sass {
             this.watcher();
         }
 
-        if ( this.srcIsDirectory) {
-            this.renderDir();
-        } else {
-            this.compileSass(this.src);
-        }
+        isDirectory(this.src)
+            .then(isDir => {
+                if ( isDir ) {
+                    this.renderDir();
+                } else {
+                    this.compileSass(this.src);
+                }
+            });
     }
 
     watcher() {
@@ -109,7 +113,10 @@ class Sass {
         files.forEach((file, i, array) => {
             if (path.basename(file)[0] !== '_') {
                 try {
-                    this.renderSassFile(file, this.getOutFilePath(file, fullPath));
+                    this.getOutFilePath(file, fullPath)
+                        .then(res => {
+                            this.renderSassFile(file, res);
+                        });
                 } catch (Error) {
                     notify(Error.message, true);
                     console.log(' ');
@@ -124,26 +131,35 @@ class Sass {
     renderSassFile(file, outFile) {
         this.sassOptions.file = file;
         this.sassOptions.outFile = outFile;
-        let result = sass.renderSync(this.sassOptions);
 
-        if (! result.error) {
-            mkDirIfDoesNotExist(parseDirectory(outFile));
+        sass.render(this.sassOptions, (err, result) => {
+            if ( err ) {
+                console.error('sass error');
+                return;
+            }
 
-            fs.writeFile(outFile, result.css, (err) => {
-                if (err) {
-                    notify(err.message, true);
-                    console.log(' ');
-                    console.log(colors.bgRed.white('ERROR'));
-                    console.log(err.message);
-                    console.log(' ');
-                }
-            });
-        }
+            parseDirectory(outFile)
+                .then(res => {
+                    mkDirIfDoesNotExist(res);
+                })
+                .then(() => {
+                    fs.writeFile(outFile, result.css, (err) => {
+                        if (err) {
+                            notify(err.message, true);
+                            console.log(' ');
+                            console.log(colors.bgRed.white('ERROR'));
+                            console.log(err.message);
+                            console.log(' ');
+                            return;
+                        }
 
-        console.log(' - ', file);
-        console.log('   Time: ', colors.bold(result.stats.duration), 'ms');
-        console.log('   Saved To: ', path.resolve(outFile));
-        console.log(' ');
+                        console.log(' - ', file);
+                        console.log('   Time: ', colors.bold(result.stats.duration), 'ms');
+                        console.log('   Saved To: ', path.resolve(outFile));
+                        console.log(' ');
+                    });
+                });
+        });
     }
 
     getOutputPath() {
@@ -159,21 +175,29 @@ class Sass {
         let name = path.basename(file, ext);
         let dirName = path.dirname(file);
 
-        if ( !this.srcIsDirectory ) {
-            fullPath = path.dirname(fullPath);
-        }
+        return isDirectory(this.src)
+            .then(isDir => {
+                if ( !isDir ) {
+                    fullPath = path.dirname(fullPath);
+                }
+            })
+            .then(() => {
+                isDirectory(this.dest)
+                    .then(isDir => {
+                        if ( !isDir ) {
+                            name = path.basename(this.sassOptions.output, '.css');
+                        }
+                    })
+            })
+            .then(() => {
+                if ( fullPath != path.resolve(dirName) ) {
+                    let sassDirName = dirName.replace(fullPath, '');
 
-        if ( !this.destIsDirectory ) {
-            name = path.basename(this.sassOptions.output, '.css');
-        }
+                    return path.join(this.sassOptions.output, sassDirName, name) + '.css';
+                }
 
-        if ( fullPath != dirName ) {
-            let sassDirName = dirName.replace(fullPath, '');
-
-            return path.join(this.sassOptions.output, sassDirName, name) + '.css';
-        }
-
-        return path.join(outputPath, name) + '.css';
+                return path.join(outputPath, name) + '.css';
+            });
     }
 }
 

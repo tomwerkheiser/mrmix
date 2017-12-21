@@ -14,7 +14,7 @@
     "concat-with-sourcemaps": "^1.0.4",
     "css-loader": "^0.28.4",
     "extract-text-webpack-plugin": "^2.1.0",
-    "fs-extra": "^3.0.1",
+    "fs-extra": "^5.0.0",
     "gaze": "^1.1.2",
     "meow": "^3.7.0",
     "node-notifier": "^5.1.2",
