@@ -5,7 +5,7 @@ const merge = require('webpack-merge');
 const colors = require('colors');
 
 // Internal Dependencies
-const {isDirectory, shouldWatch, parseDirectory} = require('../helpers/file');
+const {isDirectory, shouldWatch, parseDirectory, isProduction} = require('../helpers/file');
 const {writeHeader, writeLn, writeSpace} = require('../helpers/console');
 const notify = require('../helpers/notifier');
 
@@ -17,7 +17,6 @@ class Webpack {
         this.options = options;
         this.fileName = '';
 
-        // this.parseDest();
         this.watch = shouldWatch();
 
         this.boot();
@@ -90,6 +89,17 @@ class Webpack {
                 ]
             }
         };
+
+        if ( isProduction() ) {
+            config['plugins'] = [
+                new webpack.DefinePlugin({
+                    'process.env.NODE_ENV': '"production"'
+                }),
+                new webpack.optimize.UglifyJsPlugin({
+                    exclude: [/\.min\.js$/gi],
+                })
+            ];
+        }
 
         config = merge(config, this.options);
 

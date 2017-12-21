@@ -18,8 +18,8 @@ var Copy = function () {
     function Copy(src, dest) {
         _classCallCheck(this, Copy);
 
-        this.src = src;
-        this.dest = dest;
+        this.src = path.normalize(src);
+        this.dest = path.normalize(dest);
 
         this.boot();
     }

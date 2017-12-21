@@ -15,7 +15,8 @@ var colors = require('colors');
 var _require = require('../helpers/file'),
     isDirectory = _require.isDirectory,
     shouldWatch = _require.shouldWatch,
-    parseDirectory = _require.parseDirectory;
+    parseDirectory = _require.parseDirectory,
+    isProduction = _require.isProduction;
 
 var _require2 = require('../helpers/console'),
     writeHeader = _require2.writeHeader,
@@ -36,7 +37,6 @@ var Webpack = function () {
         this.options = options;
         this.fileName = '';
 
-        // this.parseDest();
         this.watch = shouldWatch();
 
         this.boot();
@@ -109,6 +109,14 @@ var Webpack = function () {
                     }]
                 }
             };
+
+            if (isProduction()) {
+                config['plugins'] = [new webpack.DefinePlugin({
+                    'process.env.NODE_ENV': '"production"'
+                }), new webpack.optimize.UglifyJsPlugin({
+                    exclude: [/\.min\.js$/gi]
+                })];
+            }
 
             config = merge(config, this.options);
 

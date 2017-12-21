@@ -8,8 +8,8 @@ const log = require('../helpers/console');
 
 class Copy {
     constructor(src, dest) {
-        this.src = src;
-        this.dest = dest;
+        this.src = path.normalize(src);
+        this.dest = path.normalize(dest);
 
         this.boot();
     }
