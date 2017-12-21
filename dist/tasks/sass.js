@@ -27,8 +27,6 @@ var notify = require('../helpers/notifier');
 
 var Sass = function () {
     function Sass(src, dest, options) {
-        var _this = this;
-
         _classCallCheck(this, Sass);
 
         this.graph = false;
@@ -48,17 +46,17 @@ var Sass = function () {
 
         this.boot();
 
-        global.Events.on('run', function () {
-            setImmediate(function () {
-                _this.run();
-            });
-        });
+        // global.Events.on('run', () => {
+        //     setImmediate(() => {
+        //         this.run();
+        //     })
+        // });
     }
 
     _createClass(Sass, [{
         key: 'boot',
         value: function boot() {
-            var _this2 = this;
+            var _this = this;
 
             var graphOptions = { extensions: ['scss', 'css'] };
 
@@ -68,18 +66,18 @@ var Sass = function () {
 
             isDirectory(this.src).then(function (isDir) {
                 if (isDir) {
-                    _this2.graph = grapher.parseDir(_this2.src, graphOptions);
+                    _this.graph = grapher.parseDir(_this.src, graphOptions);
                 } else {
-                    _this2.graph = grapher.parseFile(_this2.src, graphOptions);
+                    _this.graph = grapher.parseFile(_this.src, graphOptions);
                 }
 
-                _this2.run();
+                _this.run();
             });
         }
     }, {
         key: 'run',
         value: function run() {
-            var _this3 = this;
+            var _this2 = this;
 
             if (this.watch) {
                 Log.header('Getting Files to Watch...');
@@ -91,16 +89,16 @@ var Sass = function () {
 
             isDirectory(this.src).then(function (isDir) {
                 if (isDir) {
-                    _this3.renderDir();
+                    _this2.renderDir();
                 } else {
-                    _this3.compileSass(_this3.src);
+                    _this2.compileSass(_this2.src);
                 }
             });
         }
     }, {
         key: 'watcher',
         value: function watcher() {
-            var _this4 = this;
+            var _this3 = this;
 
             var watch = [];
 
@@ -114,7 +112,7 @@ var Sass = function () {
             this.gaze.add(watch);
 
             this.gaze.on('changed', function (file) {
-                return _this4.compileSass(file);
+                return _this3.compileSass(file);
             });
 
             this.gaze.on('ready', function () {
@@ -132,7 +130,7 @@ var Sass = function () {
     }, {
         key: 'compileSass',
         value: function compileSass(file) {
-            var _this5 = this;
+            var _this4 = this;
 
             var files = [file];
             var fullPath = path.resolve(this.src);
@@ -146,8 +144,8 @@ var Sass = function () {
             files.forEach(function (file, i, array) {
                 if (path.basename(file)[0] !== '_') {
                     try {
-                        _this5.getOutFilePath(file, fullPath).then(function (res) {
-                            _this5.renderSassFile(file, res);
+                        _this4.getOutFilePath(file, fullPath).then(function (res) {
+                            _this4.renderSassFile(file, res);
                         });
                     } catch (Error) {
                         notify(Error.message, true);
@@ -200,7 +198,7 @@ var Sass = function () {
     }, {
         key: 'getOutFilePath',
         value: function getOutFilePath(file, fullPath) {
-            var _this6 = this;
+            var _this5 = this;
 
             // name of file to save to.
             var outputPath = this.getOutputPath();
@@ -213,16 +211,16 @@ var Sass = function () {
                     fullPath = path.dirname(fullPath);
                 }
             }).then(function () {
-                isDirectory(_this6.dest).then(function (isDir) {
+                isDirectory(_this5.dest).then(function (isDir) {
                     if (!isDir) {
-                        name = path.basename(_this6.sassOptions.output, '.css');
+                        name = path.basename(_this5.sassOptions.output, '.css');
                     }
                 });
             }).then(function () {
                 if (fullPath != path.resolve(dirName)) {
                     var sassDirName = dirName.replace(fullPath, '');
 
-                    return path.join(_this6.sassOptions.output, sassDirName, name) + '.css';
+                    return path.join(_this5.sassOptions.output, sassDirName, name) + '.css';
                 }
 
                 return path.join(outputPath, name) + '.css';

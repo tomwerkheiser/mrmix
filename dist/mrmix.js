@@ -13,6 +13,11 @@ var Combine = require('./tasks/combine');
 var Babel = require('./tasks/babel');
 var Events = require('events');
 
+var _require = require('child_process'),
+    fork = _require.fork;
+
+var path = require('path');
+
 global.Events = new Events();
 
 var MrMix = function () {
@@ -46,6 +51,14 @@ var MrMix = function () {
     }, {
         key: 'js',
         value: function js(src, dest, options) {
+            // const forked = fork(path.join('src', 'tasks', 'webpack.js'));
+            //
+            // forked.on('message', (msg) => {
+            //     forked.kill();
+            // });
+            //
+            // forked.send({event: 'run', args: {file: {[src]: dest}, options: options}});
+
             if (!('webpack' in this.tasks)) {
                 this.tasks['webpack'] = [];
                 this.tasks.webpack.push(new Webpack(_defineProperty({}, src, dest), options));

@@ -31,11 +31,11 @@ class Sass {
 
         this.boot();
 
-        global.Events.on('run', () => {
-            setImmediate(() => {
-                this.run();
-            })
-        });
+        // global.Events.on('run', () => {
+        //     setImmediate(() => {
+        //         this.run();
+        //     })
+        // });
     }
 
     boot() {

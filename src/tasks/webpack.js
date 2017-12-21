@@ -3,11 +3,17 @@ const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const colors = require('colors');
+const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 // Internal Dependencies
 const {isDirectory, shouldWatch, parseDirectory, isProduction} = require('../helpers/file');
 const {writeHeader, writeLn, writeSpace} = require('../helpers/console');
 const notify = require('../helpers/notifier');
+
+process.on('message', ({args}) => {
+    // this.run();
+    new Webpack(args['file'], args['options'] || {})
+});
 
 class Webpack {
     constructor(files, options) {
@@ -21,6 +27,7 @@ class Webpack {
 
         this.boot();
 
+        // this.run();
         global.Events.on('run', () => {
             setImmediate(() => {
                 this.run();
@@ -87,7 +94,10 @@ class Webpack {
                         loader: 'babel-loader?cacheDirectory=true,presets[]=es2015,plugins=transform-runtime',
                     }
                 ]
-            }
+            },
+            plugins: [
+                new HardSourceWebpackPlugin()
+            ]
         };
 
         if ( isProduction() ) {
@@ -153,6 +163,8 @@ class Webpack {
                 writeSpace();
 
                 notify('JS Build Successful');
+
+                // process.send({event: 'done'});
             }
         });
     }

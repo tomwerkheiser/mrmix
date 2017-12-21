@@ -9,6 +9,7 @@ var path = require('path');
 var webpack = require('webpack');
 var merge = require('webpack-merge');
 var colors = require('colors');
+var HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 // Internal Dependencies
 
@@ -24,6 +25,13 @@ var _require2 = require('../helpers/console'),
     writeSpace = _require2.writeSpace;
 
 var notify = require('../helpers/notifier');
+
+process.on('message', function (_ref) {
+    var args = _ref.args;
+
+    // this.run();
+    new Webpack(args['file'], args['options'] || {});
+});
 
 var Webpack = function () {
     function Webpack(files, options) {
@@ -41,6 +49,7 @@ var Webpack = function () {
 
         this.boot();
 
+        // this.run();
         global.Events.on('run', function () {
             setImmediate(function () {
                 _this.run();
@@ -107,7 +116,8 @@ var Webpack = function () {
                         exclude: /node_modules/,
                         loader: 'babel-loader?cacheDirectory=true,presets[]=es2015,plugins=transform-runtime'
                     }]
-                }
+                },
+                plugins: [new HardSourceWebpackPlugin()]
             };
 
             if (isProduction()) {
@@ -174,6 +184,8 @@ var Webpack = function () {
                     writeSpace();
 
                     notify('JS Build Successful');
+
+                    // process.send({event: 'done'});
                 }
             });
         }
