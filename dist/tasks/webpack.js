@@ -35,6 +35,8 @@ process.on('message', function (_ref) {
 
 var Webpack = function () {
     function Webpack(files, options) {
+        var _this = this;
+
         _classCallCheck(this, Webpack);
 
         this.compiler = false;
@@ -47,12 +49,12 @@ var Webpack = function () {
 
         this.boot();
 
-        this.run();
-        // global.Events.on('run', () => {
-        //     setImmediate(() => {
-        //         this.run();
-        //     })
-        // });
+        // this.run();
+        global.Events.on('run', function () {
+            setImmediate(function () {
+                _this.run();
+            });
+        });
     }
 
     _createClass(Webpack, [{

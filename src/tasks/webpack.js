@@ -27,12 +27,12 @@ class Webpack {
 
         this.boot();
 
-        this.run();
-        // global.Events.on('run', () => {
-        //     setImmediate(() => {
-        //         this.run();
-        //     })
-        // });
+        // this.run();
+        global.Events.on('run', () => {
+            setImmediate(() => {
+                this.run();
+            })
+        });
     }
 
     boot() {

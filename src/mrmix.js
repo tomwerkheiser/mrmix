@@ -34,20 +34,20 @@ class MrMix {
     }
 
     js(src, dest, options) {
-        const forked = fork(path.join('src', 'tasks', 'webpack.js'));
+        // const forked = fork(path.join('src', 'tasks', 'webpack.js'));
+        //
+        // forked.on('message', (msg) => {
+        //     forked.kill();
+        // });
+        //
+        // forked.send({event: 'run', args: {file: {[src]: dest}, options: options}});
 
-        forked.on('message', (msg) => {
-            forked.kill();
-        });
-
-        forked.send({event: 'run', args: {file: {[src]: dest}, options: options}});
-
-        // if ( !('webpack' in this.tasks) ) {
-        //     this.tasks['webpack'] = [];
-        //     this.tasks.webpack.push(new Webpack({[src]: dest}, options));
-        // } else {
-        //     this.tasks.webpack[0].addEntry({[src]: dest});
-        // }
+        if ( !('webpack' in this.tasks) ) {
+            this.tasks['webpack'] = [];
+            this.tasks.webpack.push(new Webpack({[src]: dest}, options));
+        } else {
+            this.tasks.webpack[0].addEntry({[src]: dest});
+        }
 
         return this;
     }
