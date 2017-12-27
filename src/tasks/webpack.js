@@ -10,11 +10,6 @@ const {isDirectory, shouldWatch, parseDirectory, isProduction} = require('../hel
 const {writeHeader, writeLn, writeSpace} = require('../helpers/console');
 const notify = require('../helpers/notifier');
 
-process.on('message', ({args}) => {
-    // this.run();
-    new Webpack(args['file'], args['options'] || {})
-});
-
 class Webpack {
     constructor(files, options) {
         this.compiler = false;
@@ -27,7 +22,6 @@ class Webpack {
 
         this.boot();
 
-        // this.run();
         global.Events.on('run', () => {
             setImmediate(() => {
                 this.run();
@@ -163,8 +157,6 @@ class Webpack {
                 writeSpace();
 
                 notify('JS Build Successful');
-
-                process.send({event: 'done'});
             }
         });
     }

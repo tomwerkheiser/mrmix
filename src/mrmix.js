@@ -4,8 +4,6 @@ const Webpack = require('./tasks/webpack');
 const Combine = require('./tasks/combine');
 const Babel = require('./tasks/babel');
 const Events = require('events');
-const {fork} = require('child_process');
-const path = require('path');
 
 global.Events = new Events;
 
@@ -34,14 +32,6 @@ class MrMix {
     }
 
     js(src, dest, options) {
-        // const forked = fork(path.join('src', 'tasks', 'webpack.js'));
-        //
-        // forked.on('message', (msg) => {
-        //     forked.kill();
-        // });
-        //
-        // forked.send({event: 'run', args: {file: {[src]: dest}, options: options}});
-
         if ( !('webpack' in this.tasks) ) {
             this.tasks['webpack'] = [];
             this.tasks.webpack.push(new Webpack({[src]: dest}, options));
