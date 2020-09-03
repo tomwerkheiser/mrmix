@@ -1,24 +1,24 @@
 // External Dependencies
-import path from 'path';
-import sass from 'node-sass';
-import grapher from 'sass-graph';
-import Gaze from 'gaze';
-import fs from 'fs';
-import colors from 'colors';
-import tildeImporter from 'node-sass-tilde-importer';
+const path = require('path');
+const sass = require('node-sass');
+const grapher = require('sass-graph');
+const Gaze = require('gaze');
+const fs = require('fs');
+const colors = require('colors');
+const tildeImporter = require('node-sass-tilde-importer');
 
 // Internal Dependencies
-import {
+const {
     isDirectory,
     shouldWatch,
     isProduction,
     parseDirectory,
-    mkDirIfDoesntExist
-} from '../helpers/file';
-import Log from '../helpers/Log';
-import notify from '../helpers/notifier';
+    mkDirIfDoesNotExist
+} = require('../helpers/file');
+const Log = require('../helpers/Log');
+const notify = require('../helpers/notifier');
 
-export default class Sass {
+class Sass {
     constructor(src, dest, options) {
         this.graph = false;
         this.gaze = false;
@@ -91,9 +91,9 @@ export default class Sass {
     }
 
     renderDir() {
-        for (let file in this.graph.index) {
-            this.compileSass(file);
-        }
+        Object.entries(this.graph.index)
+            .filter(([file]) => path.basename(file)[0] !== '_')
+            .forEach(([file]) => this.compileSass(file));
     }
 
     compileSass(file) {
@@ -125,7 +125,7 @@ export default class Sass {
         let result = sass.renderSync(this.sassOptions);
 
         if (! result.error) {
-            mkDirIfDoesntExist(parseDirectory(outFile));
+            mkDirIfDoesNotExist(parseDirectory(outFile));
 
             fs.writeFile(outFile, result.css, (err) => {
                 if (err) {
@@ -174,3 +174,5 @@ export default class Sass {
         return path.join(outputPath, name) + '.css';
     }
 }
+
+module.exports = Sass;

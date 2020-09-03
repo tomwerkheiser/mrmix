@@ -1,16 +1,16 @@
 // External Dependencies
-import path from 'path';
-import webpack from 'webpack'
-import merge from 'webpack-merge';
-import colors from 'colors';
+const path = require('path');
+const webpack = require('webpack');
+const {merge} = require('webpack-merge');
+const colors = require('colors');
 
 // Internal Dependencies
-import {isDirectory, shouldWatch, parseDirectory} from '../helpers/file';
-import {writeHeader, writeLn, writeSpace} from '../helpers/console';
-import notify from '../helpers/notifier';
+const {isDirectory, shouldWatch, parseDirectory} = require('../helpers/file');
+const {writeHeader, writeLn, writeSpace} = require('../helpers/console');
+const notify = require('../helpers/notifier');
 
-export default class Webpack {
-    constructor(src, dest, options) {
+class Webpack {
+    constructor(src, dest, options = {}) {
         this.compiler = false;
 
         this.src = src;
@@ -76,9 +76,11 @@ export default class Webpack {
                         test: /\.vue$/,
                         loader: 'vue-loader',
                         include: path.resolve(path.dirname(this.src)),
-                        options: {
-                            loaders: {
-                                js: 'babel-loader'
+                        use: {
+                            options: {
+                                loaders: {
+                                    js: 'babel-loader'
+                                }
                             }
                         }
                     },
@@ -87,11 +89,6 @@ export default class Webpack {
                         exclude: /node_modules/,
                         loader: 'babel-loader',
                         include: path.resolve(path.dirname(this.src)),
-                        query: {
-                            cacheDirectory: true,
-                            presets: ['es2015'],
-                            plugins: ['transform-runtime']
-                        }
                     }
                 ]
             }
@@ -169,3 +166,5 @@ export default class Webpack {
         });
     }
 }
+
+module.exports = Webpack;

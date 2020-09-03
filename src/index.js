@@ -1,3 +1,3 @@
-import MrMix from './mrmix';
+const MrMix = require('./mrmix');
 
 module.exports = new MrMix;
