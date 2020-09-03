@@ -76,11 +76,9 @@ class Webpack {
                         test: /\.vue$/,
                         loader: 'vue-loader',
                         include: path.resolve(path.dirname(this.src)),
-                        use: {
-                            options: {
-                                loaders: {
-                                    js: 'babel-loader'
-                                }
+                        options: {
+                            loaders: {
+                                js: 'babel-loader'
                             }
                         }
                     },
