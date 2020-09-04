@@ -3,6 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 const {merge} = require('webpack-merge');
 const colors = require('colors');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 // Internal Dependencies
 const {isDirectory, shouldWatch, parseDirectory} = require('../helpers/file');
@@ -76,20 +77,25 @@ class Webpack {
                         test: /\.vue$/,
                         loader: 'vue-loader',
                         include: path.resolve(path.dirname(this.src)),
-                        options: {
-                            loaders: {
-                                js: 'babel-loader'
-                            }
-                        }
                     },
                     {
                         test: /\.js$/,
                         exclude: /node_modules/,
                         loader: 'babel-loader',
                         include: path.resolve(path.dirname(this.src)),
+                    },
+                    {
+                        test: /\.css$/,
+                        use: [
+                            'vue-style-loader',
+                            'css-loader'
+                        ]
                     }
                 ]
-            }
+            },
+            plugins: [
+                new VueLoaderPlugin(),
+            ]
         };
 
         config = merge(config, this.options);
