@@ -4,6 +4,7 @@ const webpack = require('webpack');
 const {merge} = require('webpack-merge');
 const colors = require('colors');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 // Internal Dependencies
 const {isDirectory, shouldWatch, parseDirectory} = require('../helpers/file');
@@ -87,14 +88,16 @@ class Webpack {
                     {
                         test: /\.css$/,
                         use: [
-                            'vue-style-loader',
+                            process.env.NODE_ENV !== 'production'
+                                ? 'style-loader'
+                                : MiniCssExtractPlugin.loader,
                             'css-loader'
                         ]
                     },
                     {
                         test: /\.s[a|c]ss$/,
                         use: [
-                            'vue-style-loader',
+                            'style-loader',
                             'css-loader',
                             'sass-loader'
                         ]
