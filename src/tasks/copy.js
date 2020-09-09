@@ -1,9 +1,9 @@
-import path from 'path';
-import fs from 'fs';
-import {isDirectory, mkDirIfDoesntExist} from '../helpers/file';
-import {writeHeader, writeLn} from '../helpers/console';
+const path = require('path');
+const fs = require('fs');
+const {isDirectory, mkDirIfDoesNotExist} = require('../helpers/file');
+const {writeHeader, writeLn} = require('../helpers/console');
 
-export default class Copy {
+class Copy {
     constructor(src, dest) {
         this.src = src;
         this.dest = dest;
@@ -53,7 +53,7 @@ export default class Copy {
         let destDir = isDirectory(dest) ? dest : path.dirname(dest);
         let destFileName = `${destDir}/${fileName}`;
 
-        mkDirIfDoesntExist(destDir);
+        mkDirIfDoesNotExist(destDir);
 
         let reader = fs.createReadStream(src);
         let writer = fs.createWriteStream(destFileName);
@@ -67,3 +67,5 @@ export default class Copy {
         });
     }
 }
+
+module.exports = Copy;

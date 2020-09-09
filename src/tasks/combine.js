@@ -1,7 +1,7 @@
-import fs from 'fs';
-import os from 'os';
+const fs = require('fs');
+const os = require('os');
 
-export default class Combine {
+class Combine {
     constructor(src, dest, fileName, type) {
         this.src = src;
         this.dest = dest;
@@ -71,3 +71,5 @@ export default class Combine {
         } catch (e) {}
     }
 }
+
+module.exports = Combine;

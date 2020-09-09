@@ -1,6 +1,6 @@
-import colors from 'colors';
+const colors = require('colors');
 
-export default class Log {
+class Log {
     static header(message) {
         console.log(colors.bgGreen.black(message));
     }
@@ -13,3 +13,5 @@ export default class Log {
         console.log(' ');
     }
 }
+
+module.exports = Log;

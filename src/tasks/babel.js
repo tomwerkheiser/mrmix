@@ -1,12 +1,12 @@
 // External Dependencies
-import webpack from 'webpack';
-import path from 'path';
+const webpack = require('webpack');
+const path = require('path');
 
 // Internal Dependencies
-import Log from '../helpers/Log';
-import {
+const Log = require('../helpers/Log');
+const {
     isDirectory
-} from '../helpers/file';
+} = require('../helpers/file');
 
 let defaultConfig = {
     module: {
@@ -24,7 +24,7 @@ let defaultConfig = {
     },
 };
 
-export default class Babel {
+class Babel {
     constructor(src, dest, options) {
         this.src = src;
         this.dest = dest;
@@ -88,3 +88,5 @@ export default class Babel {
         return this.parsedPath;
     }
 }
+
+module.exports = Babel;

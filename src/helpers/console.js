@@ -1,13 +1,13 @@
-import colors from 'colors';
+const colors = require('colors');
 
-export function writeHeader(message) {
+module.exports.writeHeader = function(message) {
     console.log(colors.bgGreen.black(message));
 }
 
-export function writeLn(message) {
+module.exports.writeLn = function(message) {
     console.log(message);
 }
 
-export function writeSpace() {
+module.exports.writeSpace = function() {
     console.log(' ');
 }
