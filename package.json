@@ -1,6 +1,6 @@
 {
   "name": "mrmix",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A command line tool to compile and build asset files",
   "main": "index.js",
   "scripts": {
