@@ -5,15 +5,17 @@ const {merge} = require('webpack-merge');
 const colors = require('colors');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const webpackDevServer = require('webpack-dev-server');
 
 // Internal Dependencies
-const {isDirectory, shouldWatch, parseDirectory} = require('../helpers/file');
+const {isDirectory, shouldWatch, shouldHotReload, parseDirectory} = require('../helpers/file');
 const {writeHeader, writeLn, writeSpace} = require('../helpers/console');
 const notify = require('../helpers/notifier');
 
 class Webpack {
     constructor(src, dest, options = {}) {
         this.compiler = false;
+        this.config = {};
 
         this.src = src;
         this.dest = dest;
@@ -22,6 +24,7 @@ class Webpack {
 
         this.parseDest();
         this.watch = shouldWatch();
+        this.hot = shouldHotReload();
 
         this.boot();
     }
@@ -34,7 +37,9 @@ class Webpack {
 
         if ( this.watch ) {
             this.watcher();
-        } else {
+        } else if ( this.hot ) {
+            this.hotReload();
+        } else  {
             this.compile();
         }
     }
@@ -111,7 +116,11 @@ class Webpack {
 
         config = merge(config, this.options);
 
-        this.compiler = webpack(config);
+        if ( !this.hot ) {
+            this.compiler = webpack(config);
+        } else {
+            this.config = config;
+        }
     }
 
     getEntry() {
@@ -178,6 +187,22 @@ class Webpack {
                     writeSpace();
                 }
             }
+        });
+    }
+
+    hotReload() {
+        const defaultOptions = {
+            contentBase: './dist',
+            hot: true,
+        };
+        const options = this.config.devServer || defaultOptions;
+
+        webpackDevServer.addDevServerEntrypoints(this.config, options);
+        const compiler = webpack(this.config);
+        const server = new webpackDevServer(compiler, options);
+
+        server.listen(options.port || 9000, 'localhost', () => {
+            console.log('dev server listening on port ', options.port || 9000);
         });
     }
 }
