@@ -102,7 +102,9 @@ class Webpack {
                     {
                         test: /\.s[a|c]ss$/,
                         use: [
-                            'style-loader',
+                            process.env.NODE_ENV !== 'production'
+                                ? 'style-loader'
+                                : MiniCssExtractPlugin.loader,
                             'css-loader',
                             'sass-loader'
                         ]
