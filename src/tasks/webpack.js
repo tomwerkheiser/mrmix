@@ -30,7 +30,7 @@ class Webpack {
     }
 
     boot() {
-        writeHeader('Getting JS Files for Webpack...');
+        writeHeader('Getting Files for Webpack...');
         writeSpace();
 
         this.setup();
@@ -142,12 +142,12 @@ class Webpack {
             if ( err ) {
                 console.log('ERROR: ', err);
             } else {
-                writeHeader('Compiling Webpack JS Files...');
+                writeHeader('Compiling Webpack Files...');
                 writeSpace();
                 writeLn(stats.toString({colors: true, modules: false, chunks: false}));
                 writeSpace();
 
-                notify('JS Build Successful');
+                notify('Webpack Build Successful');
             }
         });
     }
@@ -179,9 +179,9 @@ class Webpack {
                     writeSpace();
                     notify(info.errors[0], true);
                 } else {
-                    notify('JS Build Successful');
+                    notify('Webpack Build Successful');
 
-                    writeHeader('Compiling Webpack JS Files...');
+                    writeHeader('Compiling Webpack Files...');
                     writeSpace();
                     writeLn(stats.toString({colors: true, modules: false, chunks: false}));
                     writeSpace();
@@ -192,7 +192,7 @@ class Webpack {
 
     hotReload() {
         const defaultOptions = {
-            contentBase: './dist',
+            contentBase: this.config.output.publicPath,
             hot: true,
         };
         const options = this.config.devServer || defaultOptions;

@@ -5,8 +5,14 @@ const Combine = require('./tasks/combine');
 const Babel = require('./tasks/babel');
 
 class MrMix {
-    sass(src, dest, options) {
+    nodeSass(src, dest, options) {
         new Sass(src, dest, options);
+
+        return this;
+    }
+
+    sass(src, dest, options) {
+        new Webpack(src, dest, options);
 
         return this;
     }
