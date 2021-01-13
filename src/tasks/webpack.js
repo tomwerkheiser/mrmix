@@ -8,7 +8,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpackDevServer = require('webpack-dev-server');
 
 // Internal Dependencies
-const {isDirectory, shouldWatch, shouldHotReload, parseDirectory} = require('../helpers/file');
+const {isDirectory, shouldWatch, shouldHotReload, parseDirectory, isProduction} = require('../helpers/file');
 const {writeHeader, writeLn, writeSpace} = require('../helpers/console');
 const notify = require('../helpers/notifier');
 
@@ -93,7 +93,7 @@ class Webpack {
                     {
                         test: /\.css$/,
                         use: [
-                            process.env.NODE_ENV !== 'production'
+                            !isProduction()
                                 ? 'style-loader'
                                 : MiniCssExtractPlugin.loader,
                             'css-loader'
@@ -102,7 +102,7 @@ class Webpack {
                     {
                         test: /\.s[a|c]ss$/,
                         use: [
-                            process.env.NODE_ENV !== 'production'
+                            !isProduction()
                                 ? 'style-loader'
                                 : MiniCssExtractPlugin.loader,
                             'css-loader',
