@@ -67,6 +67,21 @@ function shouldWatch() {
 }
 
 /**
+ * Check if a flag was passed that we should hot reload
+ *
+ * @returns {{describe: string, type: string, group: string}|boolean}
+ */
+function shouldHotReload() {
+    let hot = flags.hot || false;
+
+    if ( typeof input[0] != 'undefined' && !hot ) {
+        hot = input[0].toLowerCase() == 'hot' || false;
+    }
+
+    return hot;
+}
+
+/**
  * Check if app is building for production
  *
  * @returns {Array|string|*|boolean}
@@ -79,4 +94,5 @@ module.exports.isDirectory = isDirectory;
 module.exports.mkDirIfDoesNotExist = mkDirIfDoesNotExist;
 module.exports.parseDirectory = parseDirectory;
 module.exports.shouldWatch = shouldWatch;
+module.exports.shouldHotReload = shouldHotReload;
 module.exports.isProduction = isProduction;
