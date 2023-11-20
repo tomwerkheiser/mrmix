@@ -3,7 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 const {merge} = require('webpack-merge');
 const colors = require('colors');
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const { VueLoaderPlugin } = require('vue-loader');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpackDevServer = require('webpack-dev-server');
 
