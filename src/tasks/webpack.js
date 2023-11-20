@@ -81,13 +81,13 @@ class Webpack {
                 rules: [
                     {
                         test: /\.vue$/,
-                        loader: 'vue-loader',
+                        use: ['vue-loader'],
                         include: path.resolve(path.dirname(this.src)),
                     },
                     {
                         test: /\.js$/,
                         exclude: /node_modules/,
-                        loader: 'babel-loader',
+                        use: ['babel-loader'],
                         include: path.resolve(path.dirname(this.src)),
                     },
                     {
